@@ -1,0 +1,33 @@
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MemoryCards" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <item name="colorPrimary">@color/dark_secondary</item>
+        <item name="backgroundTint">@color/dark_primary</item>
+        <!--<item name="colorSecondary">@color/dark_secondary</item>-->
+        <item name="android:fontFamily">@font/simply_sans_book</item>
+
+    </style>
+
+</resources>
+
+<!--
+
+            android:angle="45"
+            android:centerColor="@color/colorPrimary"
+            android:startColor="@color/colorPrimaryDark"
+            android:endColor="@color/colorAccent"
+
+            android:topLeftRadius="10dp"
+            android:topRightRadius="10dp"
+            android:bottomLeftRadius="10dp"
+            android:bottomRightRadius="10dp"
+            >
+        </item>
+        <stroke
+            android:width="2dp"
+            android:color="@color/colorWhite"
+            >
+        </stroke>
+
+-->

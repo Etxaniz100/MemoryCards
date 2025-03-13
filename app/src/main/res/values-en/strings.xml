@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MemoryCards</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="nuevo_mazo">New deck</string>
+    <string name="lista_mazos">Deck list</string>
+    <string name="idioma">Language</string>
+    <string name="resetear_aplicación">Reset app</string>
+    <string name="estudiar">Study</string>
+    <string name="anadir_pregunta">Add question</string>
+    <string name="ver_preguntas">See questions</string>
+    <string name="ajustes_mazo">Deck settings</string>
+    <string name="mostrar">Show</string>
+    <string name="bien">Ok</string>
+    <string name="mal">Wrong</string>
+    <string name="dias">days</string>
+    <string name="pregunta_placeholder">Question</string>
+    <string name="respuesta_placeholder">Answer</string>
+    <string name="anadir">Add</string>
+    <string name="cancelar">Cancel</string>
+    <string name="nombre_mazo">Deck name</string>
+    <string name="ajustes_generales">General settings</string>
+    <string name="huevo">Egg</string>
+    <string name="felicidad">Happines</string>
+    <string name="progreso">Progress</string>
+    <string name="abrir">Open</string>
+    <string name="seleccion_idioma">Select a lenguage</string>
+    <string name="castellano">Spanish</string>
+    <string name="ingles">English</string>
+    <string name="nombre_huevo">What is it\'s name?</string>
+    <string name="eclosionar">nombre has hatched!</string>
+    <string name="estado">State</string>
+    <string name="muy_feliz">Very happy</string>
+    <string name="feliz">Happy</string>
+    <string name="neutral">Neutral</string>
+    <string name="triste">Sad</string>
+    <string name="muy_triste">Very sad</string>
+    <string name="caducado">Expired</string>
+    <string name="borrar_mazo">Do you want to delete this deck?</string>
+    <string name="notificacion_caducado">nombre has expired</string>
+    <string name="notificacion_muy_triste">nombre is very sad!</string>
+    <string name="notificacion_triste">nombre is sad</string>
+    <string name="notificacion_neutral">"nombre is not feeling rigth "</string>
+    <string name="notificacion_feliz">nombre is happy</string>
+    <string name="notificacion_muy_feliz">nombre is very happy!</string>
+    <string name="nuevo_huevo">Obtain new egg</string>
+</resources>

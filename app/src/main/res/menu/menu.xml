@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true"
+    >
+
+    <!--Elemento-->
+
+
+    <item
+        android:id="@+id/menu_principal"
+        android:icon="@drawable/list_alt_24px"
+        android:title="@string/lista_mazos"
+
+        app:showAsAction="ifRoom|withText" />
+
+    <item
+        android:id="@+id/menu_huevo"
+        android:icon="@drawable/egg_24px"
+        android:title="@string/huevo"
+
+        app:showAsAction="ifRoom|withText" />
+
+    <!--Sub menu-->
+
+    <item android:title="@string/ajustes_generales">
+        <menu>
+            <item
+                android:id="@+id/cambiar_idioma"
+                android:icon="@drawable/language_24px"
+                android:title="@string/idioma" />
+        </menu>
+    </item>
+
+
+
+
+    <!--
+    • ifRoom: muestra el elemento en la barra si hay espacio. Si no hay espacio lo muestra en el menú oculto.
+    • withText: muestra el texto (atributo título) del elemento al lado del icono
+    • never: nunca lo pone en la barra, siempre en el menú oculto
+    • always: siempre lo muestra en la barra. Cuidado al usarlo porque puede que no entren todos los elementos.
+    -->
+
+
+</menu>

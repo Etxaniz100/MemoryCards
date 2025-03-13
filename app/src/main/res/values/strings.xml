@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">MemoryCards</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="nuevo_mazo">Nuevo mazo</string>
+    <string name="lista_mazos">Lista de mazos</string>
+    <string name="idioma">Idioma</string>
+    <string name="resetear_aplicación">Resetear aplicación</string>
+    <string name="estudiar">Estudiar</string>
+    <string name="anadir_pregunta">Añadir pregunta</string>
+    <string name="ver_preguntas">Ver preguntas</string>
+    <string name="ajustes_mazo">Ajustes mazo</string>
+    <string name="mostrar">Mostrar</string>
+    <string name="bien">Bien</string>
+    <string name="mal">Mal</string>
+    <string name="dias">días</string>
+    <string name="pregunta_placeholder">Pregunta</string>
+    <string name="respuesta_placeholder">Respuesta</string>
+    <string name="anadir">Añadir</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="nombre_mazo">Nombre del mazo</string>
+    <string name="ajustes_generales">Ajustes generales</string>
+    <string name="huevo">Huevo</string>
+    <string name="felicidad">Felicidad</string>
+    <string name="progreso">Progreso</string>
+    <string name="abrir">Abrir</string>
+    <string name="seleccion_idioma">Selecciona un idioma</string>
+    <string name="castellano">Castellano</string>
+    <string name="ingles">Inglés</string>
+    <string name="nombre_huevo">¿Como se llama?</string>
+    <string name="eclosionar">¡nombre ha eclosionado!</string>
+    <string name="estado">Estado</string>
+    <string name="muy_feliz">Muy feliz</string>
+    <string name="feliz">Feliz</string>
+    <string name="neutral">Neutral</string>
+    <string name="triste">Triste</string>
+    <string name="muy_triste">Muy triste</string>
+    <string name="caducado">Caducado</string>
+    <string name="borrar_mazo">¿Quieres borrar este mazo?</string>
+    <string name="notificacion_caducado">nombre ha caducado</string>
+    <string name="notificacion_muy_triste">¡nombre está muy triste!</string>
+    <string name="notificacion_triste">nombre esta triste</string>
+    <string name="notificacion_neutral">nombre no se encuentra bien</string>
+    <string name="notificacion_feliz">nombre esta feliz</string>
+    <string name="notificacion_muy_feliz">¡nombre está muy feliz!</string>
+    <string name="nuevo_huevo">Obtener nuevo huevo</string>
+</resources>

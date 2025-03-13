@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:openDrawer="start">
+    <!--Se puede ocultar el drawer mientras se trabaja poniendolo a end-->
+    <!--fitsSystemWindows deja espacio para la barra de la hora y demás-->
+
+    <include
+        layout="@layout/activity_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/drawer_navigation_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/cabecera_navigation_drawer"
+        app:menu="@menu/menu" />
+        <!--cabecera_navigation define el layout que sale arriba-->
+        <!--menu define los items, se usa tamién para el toolbar-->
+
+</androidx.drawerlayout.widget.DrawerLayout>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true">
+
+    <item
+        android:id="@+id/resetear_aplicacion"
+        android:icon="@drawable/delete_forever_24px"
+        android:title="@string/resetear_aplicación" />
+</menu>

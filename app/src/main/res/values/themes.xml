@@ -1,0 +1,12 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MemoryCards" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/ligth_secondary</item>
+        <item name="backgroundTint">@color/ligth_primary</item>
+        <!--<item name="colorSecondary">@color/dark_secondary</item>-->
+        <item name="android:fontFamily">@font/simply_sans_book</item>
+
+    </style>
+
+    <style name="Theme.MemoryCards" parent="Base.Theme.MemoryCards" />
+</resources>
