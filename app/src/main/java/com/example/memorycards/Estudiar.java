@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Estudiar extends Fragment {
 
@@ -21,6 +22,7 @@ public class Estudiar extends Fragment {
     private Button botonBien, botonMal, botonMostrar;
     private Carta estudiandoAhora;
     private ListenerFragmentEstudiar listener;
+    private boolean mostrado;
 
     public Estudiar() {
         // Required empty public constructor
@@ -52,12 +54,30 @@ public class Estudiar extends Fragment {
     {
         super.onViewCreated(view, savedInstanceState);
 
-        // Obtener mazo
-        nombreMazo = requireArguments().getString("nombreMazo");
+        // ---------------- Recuperar datos del bundle
+        Bundle bundle = requireArguments();
+        nombreMazo = bundle.getString("nombreMazo");
         if(nombreMazo != null)
         {
             mazo = GestorMazos.getMiGestorMazos().getMazo(nombreMazo);
         }
+
+        String pregunta = bundle.getString("pregunta");
+        if(pregunta.isEmpty() || pregunta.isBlank())
+        {
+            estudiandoAhora = null;
+        }
+        else
+        {
+            estudiandoAhora = mazo.obtenerCarta(pregunta);
+        }
+
+        mostrado = bundle.getBoolean("respuestaMostrada");
+
+        //String aaa = mostrado?"t":"f";
+        //Toast.makeText(getContext(), aaa, Toast.LENGTH_SHORT).show();
+
+        // ---------------- Obtener views
 
         textPregunta = view.findViewById(R.id.texto_pregunta);
         textRespuesta = view.findViewById(R.id.texto_respuesta);
@@ -72,7 +92,22 @@ public class Estudiar extends Fragment {
         botonMostrar = view.findViewById(R.id.boton_mostrar);
         botonMostrar.setOnClickListener(v -> mostrarRespuesta(view));
 
-        siguientePregunta();
+        if(estudiandoAhora == null)
+        {
+            siguientePregunta();
+        } else if (mostrado)
+        {
+            mostrarRespuesta(view);
+        }
+        else
+        {
+            textPregunta.setText(estudiandoAhora.pregunta);
+            textRespuesta.setText("...");
+            botonMostrar.setVisibility(View.VISIBLE);
+            botonBien.setVisibility(View.INVISIBLE);
+            botonMal.setVisibility(View.INVISIBLE);
+        }
+
 
         listener.estudiarIniciado();
 
@@ -97,6 +132,8 @@ public class Estudiar extends Fragment {
         botonMostrar.setVisibility(View.VISIBLE);
         botonBien.setVisibility(View.INVISIBLE);
         botonMal.setVisibility(View.INVISIBLE);
+
+        mostrado = false;
     }
 
     public void mostrarRespuesta(View v)
@@ -116,6 +153,8 @@ public class Estudiar extends Fragment {
             }
             botonBien.setText(texto);
         }
+
+        mostrado = true;
     }
 
     public void respuestaCorrecta(View v)
@@ -137,6 +176,16 @@ public class Estudiar extends Fragment {
         siguientePregunta();
     }
 
+    // --------------------------------- Recuperación de información
+
+    public void onSaveInstanceState(Bundle bundle)
+    {
+        super.onSaveInstanceState(bundle);
+
+        listener.guardarCartaActual(estudiandoAhora,  mostrado);
+
+    }
+
     // ------------------------- Funciones para concectarse con la actividad ---------------------------------------
     @Override
     public void onAttach(@NonNull Context context) {
@@ -153,5 +202,6 @@ public class Estudiar extends Fragment {
     {
         void finEstudio();
         void estudiarIniciado();
+        void guardarCartaActual(Carta c, boolean mostrado);
     }
 }

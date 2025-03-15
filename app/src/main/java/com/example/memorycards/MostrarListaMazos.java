@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -63,7 +62,7 @@ public class MostrarListaMazos extends Fragment {
 
         listaMazos = GestorMazos.getMiGestorMazos().getListaMazos();
 
-        GestorMazos.inicializarMazos(this.getContext(), false);
+        GestorMazos.inicializarTodo(this.getContext(), false);
     }
 
     @Override

@@ -32,7 +32,7 @@
             android:layout_marginTop="-3dp"
             android:layout_marginEnd="0dp"
             android:layout_marginBottom="61dp"
-            android:background="#6D7278" />
+            android:background="#3D4652" />
 
         <TextView
             android:id="@+id/nombreMazo"
@@ -46,9 +46,8 @@
             android:layout_marginEnd="99dp"
             android:layout_marginBottom="9dp"
             android:layout_toEndOf="@+id/imagen_borrar"
-            android:gravity="center"
+            android:gravity="center|left"
             android:text="TextView"
-            android:textAlignment="viewStart"
             android:textColor="#000000" />
 
         <TextView
@@ -60,7 +59,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="322dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="14dp"
             android:layout_marginEnd="12dp"
             android:layout_marginBottom="11dp"
             android:gravity="center"

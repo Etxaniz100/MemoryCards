@@ -44,4 +44,8 @@
     <string name="notificacion_feliz">nombre is happy</string>
     <string name="notificacion_muy_feliz">nombre is very happy!</string>
     <string name="nuevo_huevo">Obtain new egg</string>
+    <string name="no_mas_cartas_des">Come back tomorrow to keep studyng</string>
+    <string name="no_mas_cartas_tit">No cards remain</string>
+    <string name="preguntar_resetear_aplicacion">This action will delete all data from the app</string>
+    <string name="inspiracion">Inspiration</string>
 </resources>

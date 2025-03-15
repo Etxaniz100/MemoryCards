@@ -80,7 +80,15 @@ public class AdaptadorListaMazos extends RecyclerView.Adapter<AdaptadorListaMazo
 
         public void bind(final Mazo mazo, final OnItemClickListener listener) {
             nombreMazo.setText(mazo.getNombre());
-            numeroPreguntas.setText("" + mazo.getTamanoLista());
+            if(mazo == null)
+            {
+                numeroPreguntas.setText("?/?");
+            }
+            else
+            {
+                numeroPreguntas.setText(""+ mazo.getNumeroPreguntasHoy() + "/" + mazo.getTamanoLista());
+            }
+
 
             imgBorrar.setOnClickListener(new View.OnClickListener()
              {

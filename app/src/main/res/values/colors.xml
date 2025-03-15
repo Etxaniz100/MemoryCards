@@ -4,7 +4,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="dark_secondary">#26245B</color>
     <color name="dark_primary">#474178</color>
-    <color name="ligth_secondary">#7AB5EF</color>
+    <color name="ligth_secondary">#63A1DE</color>
     <color name="ligth_primary">#9CC2ED</color>
+    <color name="ligth_back">#C8B7F6</color>
 
 </resources>

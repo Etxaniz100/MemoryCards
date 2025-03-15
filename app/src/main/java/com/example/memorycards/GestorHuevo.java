@@ -110,9 +110,10 @@ public class GestorHuevo
 
     public void setNombre(String nuevoNmbre, Context context)
     {
-        GestorMazos.getMiGestorMazos().borrarHuevo(context, this);
+        GestorMazos.getMiGestorMazos().actualizarNombreHuevo(context, nombre, nuevoNmbre);
+        //GestorMazos.getMiGestorMazos().borrarHuevo(context, this);
         nombre = nuevoNmbre;
-        GestorMazos.getMiGestorMazos().nuevoHuevoBD(context, this);
+        //GestorMazos.getMiGestorMazos().nuevoHuevoBD(context, this);
     }
 
     public int calcularAumentoFelicidad()

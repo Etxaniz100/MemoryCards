@@ -44,4 +44,8 @@
     <string name="notificacion_feliz">nombre esta feliz</string>
     <string name="notificacion_muy_feliz">¡nombre está muy feliz!</string>
     <string name="nuevo_huevo">Obtener nuevo huevo</string>
+    <string name="no_mas_cartas_des">Vuelve mañana para seguir estudiando</string>
+    <string name="no_mas_cartas_tit">No quedan cartas</string>
+    <string name="preguntar_resetear_aplicacion">Esta acción borrará todos los datos de la aplicación</string>
+    <string name="inspiracion">Inspiración</string>
 </resources>

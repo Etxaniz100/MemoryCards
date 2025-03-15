@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Random;
 
 public class GestorMazos
 {
@@ -141,7 +142,7 @@ public class GestorMazos
         bd.close();
     }
 
-    public static void inicializarMazos(Context context, boolean forzar)
+    public static void inicializarTodo(Context context, boolean forzar)
     {
         try
         {
@@ -297,7 +298,9 @@ public class GestorMazos
 
         if(huevo == null)
         {
-            huevo = new GestorHuevo("Demo", 75f, 75f, Calendar.getInstance().getTime(), "rojo");
+            Random rd = new Random();
+            String[] colores = {"rojo", "verde", "gris"};
+            huevo = new GestorHuevo("???", 75, 75, Calendar.getInstance().getTime(), colores[rd.nextInt(colores.length)]);
             ContentValues nuevo = new ContentValues();
             nuevo.put("Nombre", huevo.getNombre());
             nuevo.put("Progreso", huevo.getProgreso());
@@ -318,7 +321,7 @@ public class GestorMazos
         catch (Exception e)
         {
             context.deleteDatabase("NombreBD");
-            inicializarMazos(context, false);
+            inicializarTodo(context, false);
         }
     }
 
@@ -440,6 +443,19 @@ public class GestorMazos
         GestorDB.close();
     }
 
+    public void actualizarNombreHuevo(Context context, String nombreAnterior, String nuevoNombre)
+    {
+        BaseDatos GestorDB = new BaseDatos (context, "NombreBD", null, 1);
+        SQLiteDatabase bd = GestorDB.getWritableDatabase();
+
+        ContentValues nuevo = new ContentValues();
+        nuevo.put("Nombre", nuevoNombre);
+
+        bd.update("Huevo", nuevo, "Nombre=?", new String[]{nombreAnterior});
+
+        bd.close();
+        GestorDB.close();
+    }
     private static ContentValues getContentValues(Carta carta, Mazo m)
     {
         ContentValues nuevo = new ContentValues();

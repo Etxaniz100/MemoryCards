@@ -208,7 +208,7 @@ public class Mazo
 
     public int getNumeroPreguntasHoy()
     {
-        return preguntasNuevas.size() + preguntasEstudiadas.size() + numeroPreguntasRepaso();
+        return preguntasNuevas.size() + preguntasEstudiando.size() + numeroPreguntasRepaso();
     }
 
     public int numeroPreguntasRepaso()
@@ -225,7 +225,7 @@ public class Mazo
 
         for (Carta c: preguntasEstudiadas)
         {
-            if(c.proximoEstudio != null && (c.proximoEstudio.before(ahora) || c.proximoEstudio.equals(ahora)))
+            if(c.proximoEstudio == null || c.proximoEstudio.before(ahora) || c.proximoEstudio.equals(ahora))
             {
                 ret += 1;
             }
@@ -233,4 +233,34 @@ public class Mazo
 
         return ret;
     }
+
+    public  Carta obtenerCarta(String pregunta)
+    {
+        for (Carta c: preguntasNuevas)
+        {
+            if(c.pregunta.equals(pregunta))
+            {
+                return c;
+            }
+        }
+
+        for (Carta c: preguntasEstudiando)
+        {
+            if(c.pregunta.equals(pregunta))
+            {
+                return c;
+            }
+        }
+
+        for (Carta c: preguntasEstudiadas)
+        {
+            if(c.pregunta.equals(pregunta))
+            {
+                return c;
+            }
+        }
+
+        return null;
+    }
 }
+

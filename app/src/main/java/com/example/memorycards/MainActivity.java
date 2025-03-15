@@ -1,18 +1,18 @@
 package com.example.memorycards;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -50,8 +50,15 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
 
 
     private String fragmentoActual = "";
-    private Mazo mazoActual;
     private String idioma = "es";
+
+    // ------------ Atributos para no perder información en fragmentos -------------
+
+    private Mazo mazoActual;
+
+    // -- Fragmento Estudiar
+    private Carta cartaActual;
+    private boolean respuestaMostrada;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -72,6 +79,13 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
             String nombreMazoActual = savedInstanceState.getString("mazoActual");
             mazoActual = GestorMazos.getMiGestorMazos().getMazo(nombreMazoActual);
             idioma = savedInstanceState.getString("idioma");
+
+            if(fragmentoActual.equals("estudiar"))
+            {
+                String preguntaCartaActual = savedInstanceState.getString("cartaActual");
+                cartaActual = mazoActual.obtenerCarta(preguntaCartaActual);
+                respuestaMostrada = savedInstanceState.getBoolean("respuestaMostrada");
+            }
         }
         else
         {
@@ -150,7 +164,8 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
             }
         });
 
-        // ----------------------------------- Notificaciones ----------------------------------------
+        // +----------------------------------- Notificaciones ----------------------------------------+
+        // |                                                                                           |
 
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
@@ -164,8 +179,6 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
 
 
         // --------------------------------- Abrir fragmento ------------------------------------
-
-        // Añadir fragmento
 
         switch (fragmentoActual)
         {
@@ -192,7 +205,6 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
                 getSupportFragmentManager().popBackStack();
                 abrirFragmentoHuevo();
                 break;
-
 
             case "":
             case "listaMazos":
@@ -234,7 +246,6 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
         });
 
         builder.show();
-
     }
 
     private void cambiarIdioma(String nuevoIdioma, boolean reiniciar)
@@ -258,7 +269,6 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
         {
             this.recreate();
         }
-
     }
 
     // ----------------------------------------------------------- TOOLBAR ---------------------------------------------------------------------------
@@ -281,12 +291,58 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
                 return true;
 
             case R.id.resetear_aplicacion:
-                gestorMazos.reset(getBaseContext());
-                gestorMazos.inicializarMazos(getBaseContext(), true);
-                finish();
+                preguntarBorrarTodo();
                 break;
+
+            case R.id.inspiracion:
+
+                Uri webpage = Uri.parse("https://apps.ankiweb.net/");
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
+                try {
+                    startActivity(webIntent);
+                } catch (ActivityNotFoundException e)
+                {
+                    Toast.makeText(getBaseContext(), "Error", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void preguntarBorrarTodo()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(this.getResources().getString(R.string.preguntar_resetear_aplicacion));
+
+        LinearLayout layoutName = new LinearLayout(this);
+        layoutName.setOrientation(LinearLayout.VERTICAL);
+        builder.setView(layoutName);
+
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
+                SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.remove("idioma");
+                editor.apply();
+                gestorMazos.reset(getBaseContext());
+                gestorMazos.inicializarTodo(getBaseContext(), true);
+                finish();
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 
 
@@ -346,6 +402,15 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
 
         Bundle bundle = new Bundle();
         bundle.putString("nombreMazo", m.getNombre());
+        if(cartaActual != null)
+        {
+            bundle.putString("pregunta", cartaActual.pregunta);
+        }
+        else
+        {
+            bundle.putString("pregunta", "");
+        }
+        bundle.putBoolean("respuestaMostrada", respuestaMostrada);
 
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
@@ -402,10 +467,13 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
             bundle.putString("mazoActual", mazoActual.getNombre());
         }
 
+        if(fragmentoActual.equals("estudiar") && cartaActual != null)
+        {
+            bundle.putString("cartaActual", cartaActual.pregunta);
+            bundle.putBoolean("respuestaMostrada", respuestaMostrada);
+        }
+
         bundle.putString("idioma", idioma);
-
-
-
     }
 
     public void onRestoreInstanceState (Bundle bundle)
@@ -480,6 +548,15 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
     {
         fragmentoActual = "estudiar";
     }
+
+    @Override
+    public void guardarCartaActual(Carta c, boolean mostrar)
+    {
+        cartaActual = c;
+        respuestaMostrada = mostrar;
+    }
+
+
 
     // -------------------------------------- Fragment Nueva Carta --------------------------------------------
     public void cancelarNuevaCarta()

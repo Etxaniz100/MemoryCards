@@ -1,20 +1,20 @@
 package com.example.memorycards;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 public class MostrarMazo extends Fragment {
@@ -89,6 +89,36 @@ public class MostrarMazo extends Fragment {
         if(mazo.hayCartasParaEstudiar())
         {
             listener.pulsarEstudiar(mazo);
+        }
+        else
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle(getContext().getResources().getString(R.string.no_mas_cartas_tit));
+
+            TextView aux = new TextView(getContext());
+
+            TextView descripcion = new TextView(getContext());
+            String textoDes = "  " + getContext().getResources().getString(R.string.no_mas_cartas_des);
+            descripcion.setText(textoDes);
+
+            LinearLayout layoutName = new LinearLayout(getContext());
+            layoutName.setOrientation(LinearLayout.VERTICAL);
+
+            layoutName.addView(aux);
+            layoutName.addView(descripcion);
+
+            builder.setView(layoutName);
+
+            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    dialog.dismiss();
+                }
+            });
+
+
+            builder.show();
         }
     }
 
