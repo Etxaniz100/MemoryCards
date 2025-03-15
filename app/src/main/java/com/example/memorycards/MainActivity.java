@@ -60,6 +60,11 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
     private Carta cartaActual;
     private boolean respuestaMostrada;
 
+    // -- Fragmento nueva carta
+
+    private String preguntaAMedias;
+    private String respuestaAMedias;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -85,7 +90,14 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
                 String preguntaCartaActual = savedInstanceState.getString("cartaActual");
                 cartaActual = mazoActual.obtenerCarta(preguntaCartaActual);
                 respuestaMostrada = savedInstanceState.getBoolean("respuestaMostrada");
+            } else if(fragmentoActual.equals("nuevaPregunta"))
+            {
+                preguntaAMedias = savedInstanceState.getString("preguntaAMedias");
+                respuestaAMedias = savedInstanceState.getString("respuestaAMedias");
             }
+
+
+
         }
         else
         {
@@ -369,6 +381,11 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
         mazoActual = null;
         cambiarTitulo(null);
 
+        cartaActual = null;
+        respuestaMostrada = false;
+        preguntaAMedias = "";
+        respuestaAMedias = "";
+
         vaciarBackStack();
         // Lanzar el fragmento
         getSupportFragmentManager().beginTransaction()
@@ -382,6 +399,12 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
     {
         fragmentoActual = "mostrarMazo";
         mazoActual = m;
+
+        cartaActual = null;
+        respuestaMostrada = false;
+        preguntaAMedias = "";
+        respuestaAMedias = "";
+
         cambiarTitulo(m.getNombre());
 
         Bundle bundle = new Bundle();
@@ -399,6 +422,9 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
         fragmentoActual = "estudiar";
         mazoActual = m;
         cambiarTitulo(m.getNombre());
+
+        preguntaAMedias = "";
+        respuestaAMedias = "";
 
         Bundle bundle = new Bundle();
         bundle.putString("nombreMazo", m.getNombre());
@@ -425,8 +451,13 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
         mazoActual = m;
         cambiarTitulo(m.getNombre());
 
+        cartaActual = null;
+        respuestaMostrada = false;
+
         Bundle bundle = new Bundle();
         bundle.putString("nombreMazo", m.getNombre());
+        bundle.putString("preguntaAMedias", preguntaAMedias);
+        bundle.putString("respuestaAMedias", respuestaAMedias);
 
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
@@ -471,6 +502,10 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
         {
             bundle.putString("cartaActual", cartaActual.pregunta);
             bundle.putBoolean("respuestaMostrada", respuestaMostrada);
+        } else if (fragmentoActual.equals("nuevaPregunta"))
+        {
+            bundle.putString("preguntaAMedias", preguntaAMedias);
+            bundle.putString("respuestaAMedias", respuestaAMedias);
         }
 
         bundle.putString("idioma", idioma);
@@ -507,6 +542,10 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
     @Override
     public void listaMazosIniciado()
     {
+        cartaActual = null;
+        respuestaMostrada = false;
+        preguntaAMedias = "";
+        respuestaAMedias = "";
         fragmentoActual = "listaMazos";
         cambiarTitulo("");
     }
@@ -532,6 +571,10 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
 
     public void mostrarMazoIniciado()
     {
+        cartaActual = null;
+        respuestaMostrada = false;
+        preguntaAMedias = "";
+        respuestaAMedias = "";
         fragmentoActual = "mostrarMazo";
     }
 
@@ -546,6 +589,8 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
     @Override
     public void estudiarIniciado()
     {
+        preguntaAMedias = "";
+        respuestaAMedias = "";
         fragmentoActual = "estudiar";
     }
 
@@ -570,14 +615,29 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
 
     public void nuevaPreguntaIniciado()
     {
+        cartaActual = null;
+        respuestaMostrada = false;
         fragmentoActual = "nuevaPregunta";
     }
+
+    public void guardarPreguntaAMedias(String p, String r)
+    {
+        preguntaAMedias = p;
+        respuestaAMedias = r;
+    }
+
+
+
 
     // -------------------------------------- Fragment HUEVO --------------------------------------------
 
     @Override
     public void huevoIniciado()
     {
+        cartaActual = null;
+        respuestaMostrada = false;
+        preguntaAMedias = "";
+        respuestaAMedias = "";
         fragmentoActual = "huevo";
     }
 

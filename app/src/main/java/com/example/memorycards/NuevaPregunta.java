@@ -55,15 +55,29 @@ public class NuevaPregunta extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Obtener mazo
-        nombreMazo = requireArguments().getString("nombreMazo");
+        // ---------------- Recuperar datos del bundle
+        Bundle bundle = requireArguments();
+        nombreMazo = bundle.getString("nombreMazo");
         if(nombreMazo != null)
         {
             mazo = GestorMazos.getMiGestorMazos().getMazo(nombreMazo);
         }
 
+        String posiblePregunta = bundle.getString("preguntaAMedias");
+        String posibleRespuesta = bundle.getString("respuestaAMedias");
+
         textoPregunta = (EditText) view.findViewById(R.id.texto_pregunta);
         textoRespuesta = (EditText) view.findViewById(R.id.texto_respuesta);
+
+        if(posiblePregunta != null && !posiblePregunta.isEmpty() && !posiblePregunta.isBlank())
+        {
+            textoPregunta.setText(posiblePregunta);
+        }
+
+        if(posibleRespuesta != null && !posibleRespuesta.isEmpty() && !posibleRespuesta.isBlank())
+        {
+            textoRespuesta.setText(posibleRespuesta);
+        }
 
         Button botonAceptar = view.findViewById(R.id.boton_aceptar_nueva_pregunta);
         botonAceptar.setOnClickListener(v -> anadirCarta());
@@ -76,21 +90,35 @@ public class NuevaPregunta extends Fragment {
 
     public void anadirCarta()
     {
+        listener.guardarPreguntaAMedias("", "");
         if(mazo == null)
         {
             return;
         }
         String pregunta = (String) textoPregunta.getText().toString();
         String respuesta = (String) textoRespuesta.getText().toString();
+        if(pregunta.isBlank() || pregunta.isEmpty() || respuesta.isBlank() || respuesta.isEmpty())
+        {
+            return;
+        }
         mazo.anadirCarta(new Carta(pregunta, respuesta), this.getContext());
         listener.nuevaCartaAnadida();
     }
 
     public void cancelar()
     {
+        listener.guardarPreguntaAMedias("", "");
         listener.cancelarNuevaCarta();
     }
 
+    // --------------------------------- Recuperación de información
+
+    public void onSaveInstanceState(Bundle bundle)
+    {
+        super.onSaveInstanceState(bundle);
+        listener.guardarPreguntaAMedias(textoPregunta.getText().toString(),  textoRespuesta.getText().toString());
+
+    }
 
     // ------------------------- Funciones para concectarse con la actividad ---------------------------------------
     @Override
@@ -110,5 +138,8 @@ public class NuevaPregunta extends Fragment {
         void nuevaCartaAnadida();
 
         void nuevaPreguntaIniciado();
+
+        void guardarPreguntaAMedias(String p, String r);
+
     }
 }

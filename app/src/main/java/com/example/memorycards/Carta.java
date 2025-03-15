@@ -34,6 +34,7 @@ public class Carta
         respuesta = pRespuesta;
         diasEntreEstudio = 0;
         estado = 0;
+        unaVezCorrecto = false;
     }
 
     public Carta(String pPregunta, String pRespuesta, Date pproximoEstudio, int uUltimos, boolean uUna, int eEstado)

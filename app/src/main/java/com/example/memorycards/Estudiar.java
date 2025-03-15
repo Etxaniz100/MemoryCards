@@ -138,21 +138,19 @@ public class Estudiar extends Fragment {
 
     public void mostrarRespuesta(View v)
     {
+        textPregunta.setText(estudiandoAhora.pregunta);
         textRespuesta.setText(estudiandoAhora.respuesta);
         botonMostrar.setVisibility(View.INVISIBLE);
         botonBien.setVisibility(View.VISIBLE);
         botonMal.setVisibility(View.VISIBLE);
 
-        if(estudiandoAhora.getEstado() != 0)
+        String texto = getContext().getResources().getString(R.string.bien);
+        if(estudiandoAhora.getEstado() != 0 && estudiandoAhora.unaVezCorrecto)
         {
-            String texto = getContext().getResources().getString(R.string.bien);
-            if(estudiandoAhora.unaVezCorrecto)
-            {
-                texto += " +"+(estudiandoAhora.diasEntreEstudio +1);
-                texto += " " +getContext().getResources().getString(R.string.dias);
-            }
-            botonBien.setText(texto);
+            texto += " +"+(estudiandoAhora.diasEntreEstudio +1);
+            texto += " " +getContext().getResources().getString(R.string.dias);
         }
+        botonBien.setText(texto);
 
         mostrado = true;
     }

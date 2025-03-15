@@ -50,7 +50,10 @@ public class Mazo
 
     public void anadirCarta(Carta c, Context context)
     {
-        // TODO: Comprobar si la carta ya existe, si existe lanzar un pop up de aviso
+        if(obtenerCarta(c.pregunta) != null)
+        {
+            return;
+        }
         preguntasNuevas.add(c);
         GestorMazos.getMiGestorMazos().guardarCartaEnBd(this, c, context);
 
@@ -175,7 +178,7 @@ public class Mazo
                 break;
         }
 
-        //TODO : Actualizar BD
+
         GestorMazos.getMiGestorMazos().actualizarCartaEnBd(this, c, context);
 
         GestorMazos.getMiGestorMazos().getHuevo().preguntaContestada(acertada, context);

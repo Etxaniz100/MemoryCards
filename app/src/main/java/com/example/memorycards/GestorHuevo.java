@@ -299,7 +299,7 @@ public class GestorHuevo
         }
         else if(f >= 80)
         {
-            cantidadProgresada = 3; //1;
+            cantidadProgresada = 2;
         }
 
         return cantidadProgresada;
