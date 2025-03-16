@@ -66,11 +66,11 @@ public class MostrarMazo extends Fragment {
         boton = (Button) view.findViewById(R.id.boton_anadir_preguntas);
         boton.setOnClickListener(v -> pulsarAnadirPregunta(view));
 
-        boton = (Button) view.findViewById(R.id.boton_ver_preguntas);
-        boton.setOnClickListener(v -> pulsarVerPreguntas(view));
+        //boton = (Button) view.findViewById(R.id.boton_ver_preguntas);
+        //boton.setOnClickListener(v -> pulsarVerPreguntas(view));
 
-        boton = (Button) view.findViewById(R.id.boton_ajustes_mazo);
-        boton.setOnClickListener(v -> pulsarAjustesMazo(view));
+        //boton = (Button) view.findViewById(R.id.boton_ajustes_mazo);
+        //boton.setOnClickListener(v -> pulsarAjustesMazo(view));
 
         // Obtener mazo
         nombreMazo = requireArguments().getString("nombreMazo");

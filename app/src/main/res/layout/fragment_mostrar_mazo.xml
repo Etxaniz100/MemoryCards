@@ -20,18 +20,6 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/boton_ver_preguntas"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/ver_preguntas"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/boton_anadir_preguntas"
-        app:layout_constraintStart_toStartOf="@+id/boton_anadir_preguntas"
-        app:layout_constraintTop_toBottomOf="@+id/boton_anadir_preguntas"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
         android:id="@+id/boton_anadir_preguntas"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -46,6 +34,20 @@
         app:layout_constraintTop_toBottomOf="@+id/boton_estudiar"
         app:layout_constraintVertical_bias="0.0" />
 
+    <!--
+    <Button
+        android:id="@+id/boton_ver_preguntas"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/ver_preguntas"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/boton_anadir_preguntas"
+        app:layout_constraintStart_toStartOf="@+id/boton_anadir_preguntas"
+        app:layout_constraintTop_toBottomOf="@+id/boton_anadir_preguntas"
+        app:layout_constraintVertical_bias="0.0" />
+
+
     <Button
         android:id="@+id/boton_ajustes_mazo"
         android:layout_width="0dp"
@@ -56,6 +58,6 @@
         app:layout_constraintEnd_toEndOf="@+id/boton_ver_preguntas"
         app:layout_constraintStart_toStartOf="@+id/boton_ver_preguntas"
         app:layout_constraintTop_toBottomOf="@+id/boton_ver_preguntas"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0" /> -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
