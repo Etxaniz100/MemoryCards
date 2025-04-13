@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
@@ -62,6 +63,12 @@ public class InicioSesion extends Fragment {
         Button boton = (Button) view.findViewById(R.id.boton_iniciar_sesion);
         boton.setOnClickListener(v -> iniciarSesion(view));
 
+        boton = (Button) view.findViewById(R.id.boton_ir_registro);
+        boton.setOnClickListener(v -> listener.abrirRegistro());
+
+
+
+
         listener.inicioSesionIniciado();
     }
 
@@ -86,7 +93,13 @@ public class InicioSesion extends Fragment {
             return;
         }
 
-        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(conexionBDWebService.class).build();
+        Data datosEntrada = new Data.Builder()
+                .putString("usuario", usuario)
+                .putString("clave", clave)
+                .putString("funcion", "inicio")
+                .build();
+
+        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(conexionBDWebService.class).setInputData(datosEntrada).build();
 
         WorkManager.getInstance(getContext()).getWorkInfoByIdLiveData(otwr.getId())
                 .observe(getViewLifecycleOwner(), new Observer<WorkInfo>() {
@@ -94,9 +107,35 @@ public class InicioSesion extends Fragment {
                     public void onChanged(WorkInfo workInfo) {
                         if(workInfo != null && workInfo.getState().isFinished())
                         {
-                            String resultado = workInfo.getOutputData().getString("resultado");
-                            TextView textViewResult = v.findViewById(R.id.tituloeditInicioSesionNombre);
-                            textViewResult.setText(resultado);
+                            if(workInfo.getOutputData() == null)
+                            {
+
+                                TextView textViewResult = v.findViewById(R.id.tituloeditInicioSesionNombre);
+                                textViewResult.setText("Error insperado");
+                                return;
+                            }
+                            String tipoResultado = workInfo.getOutputData().getString("tipo");
+
+                            if(tipoResultado != null && tipoResultado.equals("success"))
+                            {
+                                listener.sesionIniciada(usuario);
+                                return;
+                            }
+
+                            if(tipoResultado != null && tipoResultado.equals("error"))
+                            {
+                                String mensajeResultado = workInfo.getOutputData().getString("mensaje");
+                                if(mensajeResultado != null && mensajeResultado.equals("nadie"))
+                                {
+                                    TextView textViewResult = v.findViewById(R.id.tituloeditInicioSesionPass);
+                                    textViewResult.setText("Usuario no encontrado");
+                                } else if(mensajeResultado != null && mensajeResultado.equals("incorrecto"))
+                                {
+                                    TextView textViewResult = v.findViewById(R.id.tituloeditInicioSesionPass);
+                                    textViewResult.setText("Contraseña incorrecta");
+                                }
+                            }
+
                         }
                     }
                 });
@@ -121,6 +160,7 @@ public class InicioSesion extends Fragment {
     {
         void inicioSesionIniciado();
         void sesionIniciada(String usuario);
+        void abrirRegistro();
     }
 
 }

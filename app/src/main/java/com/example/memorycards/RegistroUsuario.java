@@ -6,10 +6,18 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,8 +59,90 @@ public class RegistroUsuario extends Fragment {
     {
         super.onViewCreated(view, savedInstanceState);
 
+        Button boton = (Button) view.findViewById(R.id.boton_registrar_usuario);
+        boton.setOnClickListener(v -> registrarUsuario(view));
 
         listener.registroUsuarioInicado();
+    }
+
+    private void registrarUsuario(View v)
+    {
+        EditText editTextUsuario = (EditText) v.findViewById(R.id.editRegistroNombre);
+        EditText editTextClave = (EditText) v.findViewById(R.id.editRegistroPass);
+        EditText editTextClaveRe = (EditText) v.findViewById(R.id.editRegistroPassRe);
+
+        String usuario = editTextUsuario.getText().toString();
+        String clave = editTextClave.getText().toString();
+        String claveRe = editTextClaveRe.getText().toString();
+
+        TextView tituloUsuario = (TextView) v.findViewById(R.id.tituloeditRegistroNombre);
+        tituloUsuario.setText("");
+        TextView tituloClave = (TextView) v.findViewById(R.id.tituloeditRegistroPass);
+        tituloClave.setText("");
+        TextView tituloClaveRe = (TextView) v.findViewById(R.id.tituloeditRegistroPassRe);
+        tituloClaveRe.setText("");
+
+        if(usuario.equals(""))
+        {
+            return;
+        }
+        if(clave.equals(""))
+        {
+            return;
+        }
+        if(claveRe.equals(""))
+        {
+            return;
+        }
+        if(!clave.equals(claveRe))
+        {
+            return;
+        }
+
+        Data datosEntrada = new Data.Builder()
+                .putString("usuario", usuario)
+                .putString("clave", clave)
+                .putString("funcion", "registro")
+                .build();
+
+        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(conexionBDWebService.class).setInputData(datosEntrada).build();
+
+        WorkManager.getInstance(getContext()).getWorkInfoByIdLiveData(otwr.getId())
+                .observe(getViewLifecycleOwner(), new Observer<WorkInfo>() {
+                    @Override
+                    public void onChanged(WorkInfo workInfo) {
+                        if(workInfo != null && workInfo.getState().isFinished())
+                        {
+                            if(workInfo.getOutputData() == null)
+                            {
+
+                                TextView textViewResult = v.findViewById(R.id.tituloeditRegistroNombre);
+                                textViewResult.setText("Error insperado");
+                                return;
+                            }
+                            String tipoResultado = workInfo.getOutputData().getString("tipo");
+
+                            if(tipoResultado != null && tipoResultado.equals("success"))
+                            {
+                                listener.usuarioRegistrado();
+                                return;
+                            }
+
+                            if(tipoResultado != null && tipoResultado.equals("error"))
+                            {
+                                String mensajeResultado = workInfo.getOutputData().getString("mensaje");
+                                if(mensajeResultado != null && mensajeResultado.equals("existe"))
+                                {
+                                    TextView textViewResult = v.findViewById(R.id.tituloeditRegistroNombre);
+                                    textViewResult.setText("Usuario existente");
+                                }
+                            }
+                        }
+                    }
+                });
+        WorkManager.getInstance(getContext()).enqueue(otwr);
+
+
     }
 
     // ------------------------- Funciones para concectarse con la actividad ---------------------------------------
@@ -70,5 +160,6 @@ public class RegistroUsuario extends Fragment {
     public interface ListenerRegistroUsuario
     {
         void registroUsuarioInicado();
+        void usuarioRegistrado();
     }
 }

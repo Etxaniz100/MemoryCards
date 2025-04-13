@@ -41,12 +41,61 @@ public class conexionBDWebService extends Worker
     {
         try
         {
-            String parametros = "user=" + URLEncoder.encode("Eneko", "UTF-8") + "&clave=" + URLEncoder.encode("E", "UTF-8");
-            String resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/checkpassword.php", parametros);
-            Data resultados = new Data.Builder()
-                    .putString("resultado",resultado)
-                    .build();
-            return Result.success(resultados);
+            String usuario = getInputData().getString("usuario");
+            String clave = getInputData().getString("clave");
+            String funcion = getInputData().getString("funcion");
+
+            String parametros;
+            String resultado;
+
+            Data resultadoData = null;
+
+            switch (funcion)
+            {
+                case "inicio":
+                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8") + "&clave=" + URLEncoder.encode(clave, "UTF-8");
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/checkpassword.php", parametros);
+
+                    JSONObject json = new JSONObject(resultado);
+
+                    if(json != null)
+                    {
+                        String tipo = json.getString("tipo");
+                        String mensaje = json.getString("mensaje");
+
+                        resultadoData = new Data.Builder()
+                                .putString("tipo",tipo)
+                                .putString("mensaje",mensaje)
+                                .build();
+                        break;
+                    }
+
+                    break;
+
+                case "registro":
+                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8") + "&clave=" + URLEncoder.encode(clave, "UTF-8");
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/registeruser.php", parametros);
+
+                    json = new JSONObject(resultado);
+
+                    if(json != null)
+                    {
+                        String tipo = json.getString("tipo");
+                        String mensaje = json.getString("mensaje");
+
+                        resultadoData = new Data.Builder()
+                                .putString("tipo",tipo)
+                                .putString("mensaje",mensaje)
+                                .build();
+                        break;
+                    }
+
+
+                default:
+                    return Result.failure();
+            }
+
+            return Result.success(resultadoData);
         }
         catch (Exception e)
         {
@@ -104,4 +153,40 @@ public class conexionBDWebService extends Worker
         return resultado;
 
     }
+
+    /*
+
+Object jsonParsed = new JSONTokener(result.toString()).nextValue();
+
+
+                if (jsonParsed instanceof JSONObject) {
+                    // JSON tipo objeto
+                    JSONObject json = (JSONObject) jsonParsed;
+
+                    String nombre = json.optString("nombre", "Sin nombre");
+                    String apellido = json.optString("Apellido", "Sin apellido");
+                    int edad = json.optInt("Edad", 0);
+                    String direccion = json.optString("Direccion", "Sin dirección");
+
+                    resultadoFinal = "Nombre: " + nombre + "\n" +
+                                     "Apellido: " + apellido + "\n" +
+                                     "Edad: " + edad + "\n" +
+                                     "Dirección: " + direccion;
+
+                } else if (jsonParsed instanceof JSONArray) {
+                    // JSON tipo array
+                    JSONArray jsonArray = (JSONArray) jsonParsed;
+
+                    StringBuilder lista = new StringBuilder("Nombres:\n");
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject obj = jsonArray.getJSONObject(i);
+                        String nombre = obj.optString("Nombre", "Sin nombre");
+                        lista.append("- ").append(nombre).append("\n");
+                    }
+
+                    resultadoFinal = lista.toString();
+                } else {
+                    resultadoFinal = "Respuesta inesperada";
+                }
+     */
 }
