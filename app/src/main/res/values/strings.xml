@@ -48,4 +48,9 @@
     <string name="no_mas_cartas_tit">No quedan cartas</string>
     <string name="preguntar_resetear_aplicacion">Esta acción borrará todos los datos de la aplicación</string>
     <string name="inspiracion">Inspiración</string>
+    <string name="iniciar_sesion">Iniciar sesión</string>
+    <string name="registrarse">Registrarse</string>
+    <string name="usuario">Usuario</string>
+    <string name="contrasena">Contraseña</string>
+    <string name="contrasena_re">Repetir contraseña</string>
 </resources>

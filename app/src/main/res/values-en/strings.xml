@@ -48,4 +48,9 @@
     <string name="no_mas_cartas_tit">No cards remain</string>
     <string name="preguntar_resetear_aplicacion">This action will delete all data from the app</string>
     <string name="inspiracion">Inspiration</string>
+    <string name="iniciar_sesion">Sign in</string>
+    <string name="registrarse">Log in</string>
+    <string name="usuario">User</string>
+    <string name="contrasena">Password</string>
+    <string name="contrasena_re">Repeat password</string>
 </resources>

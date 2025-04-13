@@ -53,5 +53,8 @@ dependencies {
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
 
     implementation 'androidx.preference:preference:1.2.0'
+
+    // Para conexion a DB remota
+    implementation 'androidx.work:work-runtime:2.7.1'
 }
 
