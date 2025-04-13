@@ -1,6 +1,8 @@
 package com.example.memorycards;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -10,11 +12,18 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
-public class ActividadInicio extends AppCompatActivity implements RegistroUsuario.ListenerRegistroUsuario, InicioSesion.ListenerInicioSesion
+public class ActividadInicio extends AppCompatActivity implements RegistroUsuario.ListenerRegistroUsuario, InicioSesion.ListenerInicioSesion, GestorMazos.ListenerBaseDatos
 {
 
     private String fragmentoActual = "";
+    private String usuario = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,12 +36,13 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
             return insets;
         });
 
+
         // Para que se cierre el menu desplegable al pulsar atras
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed()
             {
-                if(!volverAtras())
+                if(fragmentoActual.equals("inicio") || !volverAtras())
                 {
                     finish();
                 }
@@ -59,9 +69,19 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
 
     public boolean volverAtras()
     {
+        Toast.makeText(this, "" + getSupportFragmentManager().getBackStackEntryCount(), Toast.LENGTH_SHORT).show();
         return getSupportFragmentManager().popBackStackImmediate();
     }
 
+    public void vaciarBackStack()
+    {
+        FragmentManager fm = getSupportFragmentManager();
+        for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+            fm.popBackStack();
+        }
+    }
+
+    // ----------------------- Apertura de fragmentos ---------------------------
     public void abrirFragmantoInicioSesion()
     {
         fragmentoActual = "inicio";
@@ -70,6 +90,7 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
 
         //bundle.putString("sdfsdf", dfsdfsdf);
 
+        vaciarBackStack();
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
                 .replace(R.id.fragment_container_view_inicio, InicioSesion.class, bundle)
@@ -93,19 +114,69 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
                 .commit();
     }
 
+    // -------------------------------------- Recuperacion de fragmentos -------------------------------------------
+
+
+    public void onSaveInstanceState(Bundle bundle){
+        super.onSaveInstanceState(bundle);
+        //TODO
+        /*
+        bundle.putString("fragmentoActual", fragmentoActual);
+
+        if(mazoActual == null)
+        {
+            bundle.putString("mazoActual", "");
+        }
+        else
+        {
+            bundle.putString("mazoActual", mazoActual.getNombre());
+        }
+
+        if(fragmentoActual.equals("estudiar") && cartaActual != null)
+        {
+            bundle.putString("cartaActual", cartaActual.pregunta);
+            bundle.putBoolean("respuestaMostrada", respuestaMostrada);
+        } else if (fragmentoActual.equals("nuevaPregunta"))
+        {
+            bundle.putString("preguntaAMedias", preguntaAMedias);
+            bundle.putString("respuestaAMedias", respuestaAMedias);
+        }
+
+        bundle.putString("idioma", idioma);*/
+    }
+
+    // -------------------------------------- Carga de base de datos -----------------------------------------
+
+    public void cargarBaseDeDatos()
+    {
+        GestorMazos gestorMazos = GestorMazos.getMiGestorMazos();
+
+        gestorMazos.cargarBaseDeDatos(this, usuario, this);
+
+    }
+
+
+    public void iniciarAplicacion()
+    {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("usuario", usuario);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
     // -------------------------------------- Fragment INICIO SESION --------------------------------------------
 
     @Override
     public void inicioSesionIniciado()
     {
-
         fragmentoActual = "inicio";
     }
 
     @Override
     public void sesionIniciada(String usr)
     {
-        Toast.makeText(this, usr, Toast.LENGTH_SHORT).show();
+        usuario = usr;
+        cargarBaseDeDatos();
     }
 
     @Override
@@ -130,6 +201,21 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
         abrirFragmantoInicioSesion();
         Toast.makeText(this, "Usuario registrado", Toast.LENGTH_SHORT).show();
     }
+
+    // ----------------------------------- Listener BD ---------------------
+
+    @Override
+    public void todoCargado()
+    {
+        iniciarAplicacion();
+    }
+
+    @Override
+    public void error()
+    {
+        Toast.makeText(this, "Ha ocurrido un error en la base de datos", Toast.LENGTH_SHORT).show();
+    }
+
 
 
 

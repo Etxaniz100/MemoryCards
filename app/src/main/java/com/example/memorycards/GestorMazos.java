@@ -5,6 +5,18 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+import android.widget.Toast;
+
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -517,6 +529,178 @@ public class GestorMazos
     public GestorHuevo getHuevo()
     {
         return huevo;
+    }
+
+    //   +---------------------------------------------------------------------------------------------------------------------------+
+    //  /                                                                                                                             \
+    //  |                                                         BD REMOTA                                                           |
+
+    public void cargarBaseDeDatos(Context context, String usuario, LifecycleOwner owner)
+    {
+        listener = (ListenerBaseDatos) context;
+        cargarMazos(context, usuario, owner);
+
+    }
+
+    private void cargarMazos(Context context, String usuario, LifecycleOwner owner)
+    {
+        Data datosEntrada = new Data.Builder()
+                .putString("usuario", usuario)
+                .putString("funcion", "cargaMazos")
+                .build();
+
+        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(conexionBDWebService.class).setInputData(datosEntrada).build();
+
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(otwr.getId())
+                .observe(owner, new Observer<WorkInfo>() {
+                    @Override
+                    public void onChanged(WorkInfo workInfo) {
+                        if(workInfo != null && workInfo.getState().isFinished())
+                        {
+                            if(workInfo.getOutputData() == null)
+                            {
+                                listener.error();
+                                return;
+                            }
+                            String[] listaMazosResultado = workInfo.getOutputData().getStringArray("mazos");
+                            if(listaMazosResultado == null)
+                            {
+                                Log.d("MIO", "Get mazos devuelve vacio");
+                                listener.error();
+                                return;
+                            }
+                            for (String mazo: listaMazosResultado)
+                            {
+                                listaMazos.add(new Mazo(mazo, "azul"));
+                            }
+                            cargarPreguntas(context, usuario, owner);
+                            //listener.todoCargado();
+                        }
+                    }
+                });
+        WorkManager.getInstance(context).enqueue(otwr);
+    }
+
+    private void cargarPreguntas(Context context, String usuario, LifecycleOwner owner)
+    {
+
+        int numeroMazos = listaMazos.size();
+        int mazosCargados = 0;
+        for (Mazo m: listaMazos)
+        {
+            mazosCargados += 1;
+            boolean ultimo = false;
+            if(mazosCargados >= numeroMazos)
+            {
+                ultimo = true;
+            }
+
+            Data datosEntrada = new Data.Builder()
+                    .putString("usuario", usuario)
+                    .putString("mazo", m.getNombre())
+                    .putString("funcion", "cargaPreguntas")
+                    .build();
+
+            OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(conexionBDWebService.class).setInputData(datosEntrada).build();
+
+            boolean finalUltimo = ultimo;
+            WorkManager.getInstance(context).getWorkInfoByIdLiveData(otwr.getId())
+                    .observe(owner, new Observer<WorkInfo>() {
+                        @Override
+                        public void onChanged(WorkInfo workInfo) {
+                            if(workInfo != null && workInfo.getState().isFinished())
+                            {
+                                if(workInfo.getOutputData() == null)
+                                {
+                                    listener.error();
+                                    return;
+                                }
+                                String resultado = workInfo.getOutputData().getString("resultado");
+
+                                if(resultado == null)
+                                {
+                                    listener.error();
+                                    return;
+                                }
+
+                                //{"preguntas":[{"Pregunta":"\u00bfComo se apellida Mario?","Mazo":"Videojuegos","Usuario":"Eneko","Respuesta":"Mario","Estado":0,"ProximoEstudio":null,"DiasEntreEstudio":0,"UnaVezCorrecto":0}]}
+
+                                try
+                                {
+                                    JSONObject json = new JSONObject(resultado);
+
+                                    if(json != null) {
+
+                                        JSONArray arrayPreguntas = json.getJSONArray("preguntas");
+
+                                        for (int i = 0; i < arrayPreguntas.length(); i++)
+                                        {
+                                            String pregunta = arrayPreguntas.getJSONObject(i).getString("Pregunta");
+                                            String respuesta = arrayPreguntas.getJSONObject(i).getString("Respuesta");
+                                            int estado = arrayPreguntas.getJSONObject(i).getInt("Estado");
+                                            String proximoEstudio = arrayPreguntas.getJSONObject(i).getString("ProximoEstudio");
+                                            int diasEntreEstudio = arrayPreguntas.getJSONObject(i).getInt("DiasEntreEstudio");
+                                            int unaVezCorrecto = arrayPreguntas.getJSONObject(i).getInt("UnaVezCorrecto");
+
+                                            Carta c = null;
+                                            try
+                                            {
+                                                Date fechaProximoEstudio = null;
+                                                if (!proximoEstudio.isEmpty())
+                                                {
+                                                    fechaProximoEstudio = formatoFecha.parse(proximoEstudio);
+                                                }
+                                                c = new Carta(pregunta, respuesta, fechaProximoEstudio, diasEntreEstudio, unaVezCorrecto==0, estado);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                c = new Carta(pregunta, respuesta, null, 0, unaVezCorrecto==0, estado);
+                                            }
+
+                                            switch (estado)
+                                            {
+                                                case 0:
+                                                    m.getPreguntasNuevas().add(c);
+                                                    break;
+
+                                                case 1:
+                                                    m.getPreguntasEstudiando().add(c);
+                                                    break;
+
+                                                case 2:
+                                                    m.getPreguntasEstudiadas().add(c);
+                                                    break;
+                                            }
+
+                                        }
+                                    }
+
+                                }
+                                catch (Exception e)
+                                {
+                                    listener.error();
+                                    return;
+                                }
+
+                                if(finalUltimo == true)
+                                {
+                                    listener.todoCargado();
+                                }
+
+
+                            }
+                        }
+                    });
+            WorkManager.getInstance(context).enqueue(otwr);
+        }
+    }
+
+
+    private ListenerBaseDatos listener;
+    public interface ListenerBaseDatos
+    {
+        void todoCargado();
+        void error();
     }
 
 }

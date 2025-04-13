@@ -11,22 +11,14 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.work.Worker;
-import androidx.work.WorkerParameters;
+import android.util.Log;
+
 import androidx.work.Data;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 
 public class conexionBDWebService extends Worker
@@ -44,11 +36,14 @@ public class conexionBDWebService extends Worker
             String usuario = getInputData().getString("usuario");
             String clave = getInputData().getString("clave");
             String funcion = getInputData().getString("funcion");
+            String nombreMazo = getInputData().getString("mazo");
 
             String parametros;
             String resultado;
 
             Data resultadoData = null;
+
+            Log.d("MIO", "do Work Pre Switch");
 
             switch (funcion)
             {
@@ -67,7 +62,6 @@ public class conexionBDWebService extends Worker
                                 .putString("tipo",tipo)
                                 .putString("mensaje",mensaje)
                                 .build();
-                        break;
                     }
 
                     break;
@@ -87,8 +81,66 @@ public class conexionBDWebService extends Worker
                                 .putString("tipo",tipo)
                                 .putString("mensaje",mensaje)
                                 .build();
-                        break;
                     }
+                    break;
+
+                case "cargaMazos":
+                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8");
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/obtenermazos.php", parametros);
+
+                    json = new JSONObject(resultado);
+
+
+                    if(json != null)
+                    {
+
+                        JSONArray arrayMazos = json.getJSONArray("mazos");
+                        String[] lista = new String[arrayMazos.length()];
+
+                        for (int i = 0; i < arrayMazos.length(); i++)
+                        {
+                            lista[i] = arrayMazos.getString(i);
+
+                        }
+
+                        resultadoData = new Data.Builder()
+                                .putStringArray("mazos", lista)
+                                .putString("resultado", resultado)
+                                .build();
+                    }
+                    break;
+
+
+                case "cargaPreguntas":
+                    Log.d("MIO", "Cargando preguntas...");
+                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8") + "&mazo=" + URLEncoder.encode(nombreMazo, "UTF-8");
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/obtenerpreguntas.php", parametros);
+                    Log.d("MIO", resultado);
+                    resultadoData = new Data.Builder()
+                            .putString("resultado", resultado)
+                            .build();
+                    break;
+                    /*
+                    json = new JSONObject(resultado);
+
+                    if(json != null)
+                    {
+
+                        JSONArray arrayMazos = json.getJSONArray("mazos");
+                        String[] lista = new String[arrayMazos.length()];
+
+                        for(int i = 0; i < arrayMazos.length(); i++)
+                        {
+                            lista[i] = arrayMazos.getString(i);
+
+                        }
+
+                        resultadoData = new Data.Builder()
+                                .putStringArray("mazos", lista)
+                                .putString("resultado", resultado)
+                                .build();
+                        break;
+                    }*/
 
 
                 default:

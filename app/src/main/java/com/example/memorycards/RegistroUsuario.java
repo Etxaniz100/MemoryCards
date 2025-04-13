@@ -84,18 +84,22 @@ public class RegistroUsuario extends Fragment {
 
         if(usuario.equals(""))
         {
+            tituloUsuario.setText("Este campo es obligatorio");
             return;
         }
         if(clave.equals(""))
         {
+            tituloClave.setText("Este campo es obligatorio");
             return;
         }
         if(claveRe.equals(""))
         {
+            tituloClaveRe.setText("Este campo es obligatorio");
             return;
         }
         if(!clave.equals(claveRe))
         {
+            tituloClaveRe.setText("Las contraseñas no coinciden");
             return;
         }
 
@@ -116,8 +120,7 @@ public class RegistroUsuario extends Fragment {
                             if(workInfo.getOutputData() == null)
                             {
 
-                                TextView textViewResult = v.findViewById(R.id.tituloeditRegistroNombre);
-                                textViewResult.setText("Error insperado");
+                                tituloUsuario.setText("Error insperado");
                                 return;
                             }
                             String tipoResultado = workInfo.getOutputData().getString("tipo");
@@ -133,8 +136,7 @@ public class RegistroUsuario extends Fragment {
                                 String mensajeResultado = workInfo.getOutputData().getString("mensaje");
                                 if(mensajeResultado != null && mensajeResultado.equals("existe"))
                                 {
-                                    TextView textViewResult = v.findViewById(R.id.tituloeditRegistroNombre);
-                                    textViewResult.setText("Usuario existente");
+                                    tituloUsuario.setText("Usuario existente");
                                 }
                             }
                         }

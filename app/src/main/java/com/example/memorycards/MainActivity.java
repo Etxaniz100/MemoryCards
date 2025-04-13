@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
 
     private String fragmentoActual = "";
     private String idioma = "es";
+    private String usuario = "";
 
     // ------------ Atributos para no perder información en fragmentos -------------
 
@@ -84,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
             String nombreMazoActual = savedInstanceState.getString("mazoActual");
             mazoActual = GestorMazos.getMiGestorMazos().getMazo(nombreMazoActual);
             idioma = savedInstanceState.getString("idioma");
+            usuario = savedInstanceState.getString("usuario");
+
 
             if(fragmentoActual.equals("estudiar"))
             {
@@ -487,6 +490,7 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
     public void onSaveInstanceState(Bundle bundle){
         super.onSaveInstanceState(bundle);
 
+        bundle.putString("usuario", usuario);
         bundle.putString("fragmentoActual", fragmentoActual);
 
         if(mazoActual == null)

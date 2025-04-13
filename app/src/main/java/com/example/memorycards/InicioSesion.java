@@ -86,10 +86,12 @@ public class InicioSesion extends Fragment {
         tituloClave.setText("");
         if(usuario.equals(""))
         {
+            tituloUsuario.setText("Este campo es obligatorio");
             return;
         }
         if(clave.equals(""))
         {
+            tituloClave.setText("Este campo es obligatorio");
             return;
         }
 
@@ -127,12 +129,10 @@ public class InicioSesion extends Fragment {
                                 String mensajeResultado = workInfo.getOutputData().getString("mensaje");
                                 if(mensajeResultado != null && mensajeResultado.equals("nadie"))
                                 {
-                                    TextView textViewResult = v.findViewById(R.id.tituloeditInicioSesionPass);
-                                    textViewResult.setText("Usuario no encontrado");
+                                    tituloUsuario.setText("Usuario no encontrado");
                                 } else if(mensajeResultado != null && mensajeResultado.equals("incorrecto"))
                                 {
-                                    TextView textViewResult = v.findViewById(R.id.tituloeditInicioSesionPass);
-                                    textViewResult.setText("Contraseña incorrecta");
+                                    tituloClave.setText("Contraseña incorrecta");
                                 }
                             }
 
