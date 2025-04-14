@@ -159,7 +159,7 @@ public class Estudiar extends Fragment {
     {
         if(estudiandoAhora != null)
         {
-            mazo.cartaAcertada(estudiandoAhora, true, getContext());
+            mazo.cartaAcertada(estudiandoAhora, true, getContext(), getActivity());
         }
         siguientePregunta();
     }
@@ -168,7 +168,7 @@ public class Estudiar extends Fragment {
     {
         if(estudiandoAhora != null)
         {
-            mazo.cartaAcertada(estudiandoAhora, false, getContext());
+            mazo.cartaAcertada(estudiandoAhora, false, getContext(), getActivity());
         }
 
         siguientePregunta();

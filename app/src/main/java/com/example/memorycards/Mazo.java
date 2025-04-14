@@ -2,6 +2,8 @@ package com.example.memorycards;
 
 import android.content.Context;
 
+import androidx.lifecycle.LifecycleOwner;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,6 +16,7 @@ public class Mazo
     public ArrayList<Carta> preguntasNuevas;
     public ArrayList<Carta> preguntasEstudiadas;
     public ArrayList<Carta> preguntasEstudiando;
+    public int idActual = 0;
 
 
     public Mazo(String pNombre, String pColor)
@@ -48,14 +51,17 @@ public class Mazo
         return preguntasEstudiando;
     }
 
-    public void anadirCarta(Carta c, Context context)
+    public void anadirCarta(String pregunta, String respuesta, Context context, LifecycleOwner owner)
     {
-        if(obtenerCarta(c.pregunta) != null)
-        {
-            return;
-        }
+        Carta c = null;
+        int nuevoId = idActual;
+        idActual += 1;
+
+        c = new Carta(pregunta, respuesta, nuevoId);
+
         preguntasNuevas.add(c);
-        GestorMazos.getMiGestorMazos().guardarCartaEnBd(this, c, context);
+
+        GestorMazos.getMiGestorMazos().guardarCartaEnBd(this, c, context, owner);
 
     }
 
@@ -127,7 +133,7 @@ public class Mazo
         preguntasNuevas.remove(c);
     }
 
-    public void cartaAcertada(Carta c, boolean acertada, Context context)
+    public void cartaAcertada(Carta c, boolean acertada, Context context, LifecycleOwner owner)
     {
         switch (c.getEstado())
         {
@@ -179,9 +185,9 @@ public class Mazo
         }
 
 
-        GestorMazos.getMiGestorMazos().actualizarCartaEnBd(this, c, context);
+        GestorMazos.getMiGestorMazos().actualizarCartaEnBd(this, c, context, owner);
 
-        GestorMazos.getMiGestorMazos().getHuevo().preguntaContestada(acertada, context);
+        GestorMazos.getMiGestorMazos().getHuevo().preguntaContestada(acertada, context, owner);
 
     }
 

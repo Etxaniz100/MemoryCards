@@ -3,24 +3,17 @@ package com.example.memorycards;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
+import androidx.lifecycle.LifecycleOwner;
 
-import java.nio.Buffer;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.os.Build;
 import android.util.Log;
-
-import androidx.core.app.NotificationCompat;
 
 public class GestorHuevo
 {
@@ -32,7 +25,7 @@ public class GestorHuevo
     private String[] colores = {"rojo", "verde", "gris"};
     private int ratio;
 
-    public GestorHuevo(Context context)
+    public GestorHuevo()
     {
         nombre = "Huevo";
         progreso = 0f;
@@ -110,11 +103,12 @@ public class GestorHuevo
         return nombre;
     }
 
-    public void setNombre(String nuevoNmbre, Context context)
+    public void setNombre(String nuevoNombre, Context context, LifecycleOwner owner)
     {
-        GestorMazos.getMiGestorMazos().actualizarNombreHuevo(context, nombre, nuevoNmbre);
+        //GestorMazos.getMiGestorMazos().actualizarNombreHuevo(context, nuevoNmbre);
         //GestorMazos.getMiGestorMazos().borrarHuevo(context, this);
-        nombre = nuevoNmbre;
+        nombre = nuevoNombre;
+        GestorMazos.getMiGestorMazos().subirHuevo(context, this, owner);
         //GestorMazos.getMiGestorMazos().nuevoHuevoBD(context, this);
     }
 
@@ -145,7 +139,7 @@ public class GestorHuevo
         return estadoActual;
     }
 
-    public void preguntaContestada(boolean acertada, Context context)
+    public void preguntaContestada(boolean acertada, Context context, LifecycleOwner owner)
     {
         String estadoAux = estadoActual;
         if(acertada)
@@ -249,7 +243,7 @@ public class GestorHuevo
             }
 
         }
-        GestorMazos.getMiGestorMazos().actualizarBDHuevo(context, this);
+        GestorMazos.getMiGestorMazos().subirHuevo(context, this, owner);
     }
 
     public float getFelicidad() {

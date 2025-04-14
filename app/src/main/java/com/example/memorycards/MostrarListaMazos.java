@@ -94,7 +94,7 @@ public class MostrarListaMazos extends Fragment {
             @Override
             public void borrarMazo(Mazo m)
             {
-                GestorMazos.getMiGestorMazos().borrarMazo(m, getContext());
+                GestorMazos.getMiGestorMazos().borrarMazo(m, getContext(), getActivity());
                 adaptadorListaMazos.notifyDataSetChanged();
             }
         });
@@ -129,7 +129,7 @@ public class MostrarListaMazos extends Fragment {
                 dialog.dismiss();
                 String nombreMazo = editTextNombreMazo.getText().toString();
                 //Toast.makeText(getContext(), nombreMazo, Toast.LENGTH_SHORT).show();
-                GestorMazos.getMiGestorMazos().crearMazo(nombreMazo, getContext());
+                GestorMazos.getMiGestorMazos().crearMazo(nombreMazo, getContext(), getActivity());
                 adaptadorListaMazos.notifyDataSetChanged();
             }
         });

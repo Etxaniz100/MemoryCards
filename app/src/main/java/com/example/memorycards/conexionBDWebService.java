@@ -7,6 +7,7 @@ import androidx.work.WorkerParameters;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -38,6 +39,7 @@ public class conexionBDWebService extends Worker
             String funcion = getInputData().getString("funcion");
             String nombreMazo = getInputData().getString("mazo");
 
+
             String parametros;
             String resultado;
 
@@ -47,6 +49,9 @@ public class conexionBDWebService extends Worker
 
             switch (funcion)
             {
+
+                // ------------------------- USUARIO ----------------------------------------------------------------------------------------------------------
+
                 case "inicio":
                     parametros = "user=" + URLEncoder.encode(usuario, "UTF-8") + "&clave=" + URLEncoder.encode(clave, "UTF-8");
                     resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/checkpassword.php", parametros);
@@ -84,9 +89,12 @@ public class conexionBDWebService extends Worker
                     }
                     break;
 
+
+                // ------------------------- MAZO ----------------------------------------------------------------------------------------------------------
+
                 case "cargaMazos":
-                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8");
-                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/obtenermazos.php", parametros);
+                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8")+ "&funcion=" + URLEncoder.encode("obtener", "UTF-8");
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/gestionarmazo.php", parametros);
 
                     json = new JSONObject(resultado);
 
@@ -111,25 +119,165 @@ public class conexionBDWebService extends Worker
                     break;
 
 
-                case "cargaPreguntas":
-                    Log.d("MIO", "Cargando preguntas...");
-                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8") + "&mazo=" + URLEncoder.encode(nombreMazo, "UTF-8");
-                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/obtenerpreguntas.php", parametros);
-                    Log.d("MIO", resultado);
+                case "subirMazo":
+                    Log.d("MIO", "Subiendo mazo...");
+                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8") + "&mazo=" + URLEncoder.encode(nombreMazo, "UTF-8")+ "&funcion=" + URLEncoder.encode("subir", "UTF-8");
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/gestionarmazo.php", parametros);
+                    Log.d("MIO", "Resultado subir mazo : " + resultado);
                     resultadoData = new Data.Builder()
                             .putString("resultado", resultado)
                             .build();
                     break;
 
+                case "borrarMazo":
+                    Log.d("MIO", "Borrando mazo...");
+                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8") + "&mazo=" + URLEncoder.encode(nombreMazo, "UTF-8")+ "&funcion=" + URLEncoder.encode("borrar", "UTF-8");
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/gestionarmazo.php", parametros);
+                    Log.d("MIO", "Resultado borrar mazo : " + resultado);
+                    resultadoData = new Data.Builder()
+                            .putString("resultado", resultado)
+                            .build();
+                    break;
+
+                // ------------------------- CARTA ----------------------------------------------------------------------------------------------------------
+
+                case "cargaPreguntas":
+                    Log.d("MIO", "Cargando preguntas...");
+                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8") + "&mazo=" + URLEncoder.encode(nombreMazo, "UTF-8");
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/obtenerpreguntas.php", parametros);
+                    Log.d("MIO", "Resultado cargarPreguntas : " +resultado);
+                    resultadoData = new Data.Builder()
+                            .putString("resultado", resultado)
+                            .build();
+                    break;
+
+                case "subirCarta":
+                    Log.d("MIO", "Subiendo carta...");
+
+                    JSONObject jsonSubirCarta = new JSONObject();
+
+                    jsonSubirCarta.put("funcion", "subir");
+
+                    jsonSubirCarta.put("mazo", nombreMazo);
+                    jsonSubirCarta.put("usuario", usuario);
+
+                    int idCarta = getInputData().getInt("id", 0);
+                    jsonSubirCarta.put("id", idCarta);
+
+                    String pregunta = getInputData().getString("pregunta");
+                    jsonSubirCarta.put("pregunta", pregunta);
+
+                    String respuesta = getInputData().getString("respuesta");
+                    jsonSubirCarta.put("respuesta", respuesta);
+
+                    String proximoEstudio = getInputData().getString("proximoEstudio");
+                    jsonSubirCarta.put("proximoEstudio", proximoEstudio);
+
+                    int estado = getInputData().getInt("estado", 0);
+                    jsonSubirCarta.put("estado", estado);
+
+
+                    int diasEntreEstudio = getInputData().getInt("diasEntreEstudio", 0);
+                    jsonSubirCarta.put("diasEntreEstudio", diasEntreEstudio);
+
+                    int unaVezCorrecto = getInputData().getInt("unaVezCorrecto", 0);
+                    jsonSubirCarta.put("unaVezCorrecto", unaVezCorrecto);
+                    Log.d("MIO", "Subir carta : " + jsonSubirCarta.toString());
+
+
+                    resultado = conexionJson("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/gestionarcarta.php", jsonSubirCarta);
+                    Log.d("MIO", "Resultado subir carta : " + resultado);
+                    resultadoData = new Data.Builder()
+                            .putString("resultado", resultado)
+                            .build();
+                    break;
+
+                case "actualizarCarta":
+                    Log.d("MIO", "Actualizando carta...");
+
+                    jsonSubirCarta = new JSONObject();
+
+                    jsonSubirCarta.put("funcion", "actualizar");
+
+                    jsonSubirCarta.put("mazo", nombreMazo);
+                    jsonSubirCarta.put("usuario", usuario);
+
+                    idCarta = getInputData().getInt("id", 0);
+                    jsonSubirCarta.put("id", idCarta);
+
+                    pregunta = getInputData().getString("pregunta");
+                    jsonSubirCarta.put("pregunta", pregunta);
+
+                    respuesta = getInputData().getString("respuesta");
+                    jsonSubirCarta.put("respuesta", respuesta);
+
+                    proximoEstudio = getInputData().getString("proximoEstudio");
+                    jsonSubirCarta.put("proximoEstudio", proximoEstudio);
+
+                    estado = getInputData().getInt("estado", 0);
+                    jsonSubirCarta.put("estado", estado);
+
+
+                    diasEntreEstudio = getInputData().getInt("diasEntreEstudio", 0);
+                    jsonSubirCarta.put("diasEntreEstudio", diasEntreEstudio);
+
+                    unaVezCorrecto = getInputData().getInt("unaVezCorrecto", 0);
+                    jsonSubirCarta.put("unaVezCorrecto", unaVezCorrecto);
+
+                    Log.d("MIO", "Actualizar carta : " + jsonSubirCarta.toString());
+
+                    resultado = conexionJson("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/gestionarcarta.php", jsonSubirCarta);
+                    Log.d("MIO", "Resultado actualizar carta : " + resultado);
+                    resultadoData = new Data.Builder()
+                            .putString("resultado", resultado)
+                            .build();
+                    break;
+
+                // ------------------------- HUEVO ----------------------------------------------------------------------------------------------------------
                 case "cargaHuevo":
                     Log.d("MIO", "Cargando huevo...");
-                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8");
-                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/obtenerhuevo.php", parametros);
+                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8") + "&funcion=" + URLEncoder.encode("obtener", "UTF-8");
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/gestionarhuevo.php", parametros);
                     Log.d("MIO", "Resultado cargarHuevo : " + resultado);
                     resultadoData = new Data.Builder()
                             .putString("resultado", resultado)
                             .build();
                     break;
+
+                case "subirHuevo":
+                    Log.d("MIO", "Subiendo huevo...");
+
+                    String nombreHuevo = getInputData().getString("nombre");
+                    double progresoHuevo = getInputData().getDouble("progreso", 0);
+                    double felicidadHuevo = getInputData().getDouble("felicidad", 0);
+                    String colorHuevo = getInputData().getString("color");
+                    String ultimaVezAbiertoHuevo = getInputData().getString("ultimaVezAbierto");
+
+                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8")
+                                + "&funcion=" + URLEncoder.encode("subir", "UTF-8")
+                                + "&nombre=" + URLEncoder.encode(nombreHuevo, "UTF-8")
+                                + "&progreso=" + URLEncoder.encode(String.valueOf(progresoHuevo), "UTF-8")
+                                + "&felicidad=" + URLEncoder.encode(String.valueOf(felicidadHuevo), "UTF-8")
+                                + "&color=" + URLEncoder.encode(colorHuevo, "UTF-8")
+                                + "&ultimaVezAbierto=" + URLEncoder.encode(ultimaVezAbiertoHuevo, "UTF-8");
+
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/gestionarhuevo.php", parametros);
+                    Log.d("MIO", "Resultado subir huevo : " + resultado);
+                    resultadoData = new Data.Builder()
+                            .putString("resultado", resultado)
+                            .build();
+                    break;
+
+                case "borrarHuevo":
+                    Log.d("MIO", "Borrando huevo...");
+                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8") + "&mazo=" + URLEncoder.encode(nombreMazo, "UTF-8")+ "&funcion=" + URLEncoder.encode("borrar", "UTF-8");
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/gestionarhuevo.php", parametros);
+                    Log.d("MIO", "Resultado borrar huevo : " + resultado);
+                    resultadoData = new Data.Builder()
+                            .putString("resultado", resultado)
+                            .build();
+                    break;
+
                 default:
                     return Result.failure();
             }
@@ -192,6 +340,59 @@ public class conexionBDWebService extends Worker
         return resultado;
 
     }
+
+    private String conexionJson(String enlace, JSONObject json)
+    {
+        String resultado = "";
+
+        try {
+            // Dirección del web service
+            URL url = new URL(enlace);
+
+
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setDoOutput(true);
+            urlConnection.setConnectTimeout(5000);
+            urlConnection.setReadTimeout(5000);
+            urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+
+            // Enviar los parámetros
+            OutputStream os = urlConnection.getOutputStream();
+            os.write(json.toString().getBytes("UTF-8"));
+            os.close();
+
+            int statusCode = urlConnection.getResponseCode();
+
+            if (statusCode == 200)
+            {
+                BufferedInputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+
+                StringBuilder devuelto = new StringBuilder();
+                String line;
+                while ((line = bufferedReader.readLine()) != null)
+                {
+                    devuelto.append(line);
+                }
+
+                inputStream.close();
+
+                resultado = devuelto.toString();
+            }
+
+            urlConnection.disconnect();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+        return resultado;
+
+    }
+
+
+
 
     /*
 

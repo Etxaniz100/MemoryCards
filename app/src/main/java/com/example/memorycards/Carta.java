@@ -7,6 +7,7 @@ import java.util.Date;
 
 public class Carta
 {
+    int id;
     String pregunta;
     String respuesta;
 
@@ -28,16 +29,17 @@ public class Carta
     boolean unaVezCorrecto;
     */
 
-    public Carta(String pPregunta, String pRespuesta)
+    public Carta(String pPregunta, String pRespuesta, int pId)
     {
         pregunta = pPregunta;
         respuesta = pRespuesta;
         diasEntreEstudio = 0;
         estado = 0;
         unaVezCorrecto = false;
+        id = pId;
     }
 
-    public Carta(String pPregunta, String pRespuesta, Date pproximoEstudio, int uUltimos, boolean uUna, int eEstado)
+    public Carta(String pPregunta, String pRespuesta, Date pproximoEstudio, int uUltimos, boolean uUna, int eEstado, int pId)
     {
         pregunta = pPregunta;
         respuesta = pRespuesta;
@@ -51,6 +53,8 @@ public class Carta
         prueba += " -> ";
         prueba += unaVezCorrecto?"true":"false";
         Log.i("miTag", prueba);
+
+        id = pId;
 
     }
 

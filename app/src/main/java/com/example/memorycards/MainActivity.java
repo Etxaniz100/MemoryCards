@@ -345,8 +345,9 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.remove("idioma");
                 editor.apply();
-                gestorMazos.reset(getBaseContext());
-                gestorMazos.inicializarTodo(getBaseContext(), true);
+                // TODO
+                //gestorMazos.reset(getBaseContext());
+                //gestorMazos.inicializarTodo(getBaseContext(), true);
                 finish();
             }
         });

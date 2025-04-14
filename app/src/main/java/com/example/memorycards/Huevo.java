@@ -105,7 +105,7 @@ public class Huevo extends Fragment {
                         String nombreHuevo = editTextNombreHuevo.getText().toString();
                         if(!nombreHuevo.isEmpty() && !nombreHuevo.isBlank())
                         {
-                            huevo.setNombre(nombreHuevo, getContext());
+                            huevo.setNombre(nombreHuevo, getContext(), getActivity());
                             textoNombre.setText(huevo.getNombre());
                         }
                     }
@@ -353,9 +353,9 @@ public class Huevo extends Fragment {
     private void abrirHuevo()
     {
         String nombreH = huevo.getNombre();
-        GestorMazos.getMiGestorMazos().borrarHuevo(this.getContext(), huevo);
+        //GestorMazos.getMiGestorMazos().borrarHuevo(this.getContext(), huevo);
 
-        huevo =  GestorMazos.getMiGestorMazos().nuevoHuevo(this.getContext());
+        huevo =  GestorMazos.getMiGestorMazos().nuevoHuevo(this.getContext(), getActivity());
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         String titulo = getContext().getResources().getString(R.string.eclosionar);
@@ -382,9 +382,9 @@ public class Huevo extends Fragment {
 
     private void nuevoHuevo()
     {
-        GestorMazos.getMiGestorMazos().borrarHuevo(this.getContext(), huevo);
+        //GestorMazos.getMiGestorMazos().borrarHuevo(this.getContext(), huevo);
 
-        huevo =  GestorMazos.getMiGestorMazos().nuevoHuevo(this.getContext());
+        huevo =  GestorMazos.getMiGestorMazos().nuevoHuevo(this.getContext(), getActivity());
 
         listener.huevoCaducado();
 

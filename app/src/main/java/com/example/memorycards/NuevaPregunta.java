@@ -101,7 +101,7 @@ public class NuevaPregunta extends Fragment {
         {
             return;
         }
-        mazo.anadirCarta(new Carta(pregunta, respuesta), this.getContext());
+        mazo.anadirCarta(pregunta, respuesta, getContext(), getActivity());
         listener.nuevaCartaAnadida();
     }
 
