@@ -120,29 +120,16 @@ public class conexionBDWebService extends Worker
                             .putString("resultado", resultado)
                             .build();
                     break;
-                    /*
-                    json = new JSONObject(resultado);
 
-                    if(json != null)
-                    {
-
-                        JSONArray arrayMazos = json.getJSONArray("mazos");
-                        String[] lista = new String[arrayMazos.length()];
-
-                        for(int i = 0; i < arrayMazos.length(); i++)
-                        {
-                            lista[i] = arrayMazos.getString(i);
-
-                        }
-
-                        resultadoData = new Data.Builder()
-                                .putStringArray("mazos", lista)
-                                .putString("resultado", resultado)
-                                .build();
-                        break;
-                    }*/
-
-
+                case "cargaHuevo":
+                    Log.d("MIO", "Cargando huevo...");
+                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8");
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/obtenerhuevo.php", parametros);
+                    Log.d("MIO", "Resultado cargarHuevo : " + resultado);
+                    resultadoData = new Data.Builder()
+                            .putString("resultado", resultado)
+                            .build();
+                    break;
                 default:
                     return Result.failure();
             }

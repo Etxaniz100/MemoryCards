@@ -18,6 +18,8 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
+import android.util.Log;
+
 import androidx.core.app.NotificationCompat;
 
 public class GestorHuevo
@@ -120,8 +122,12 @@ public class GestorHuevo
     {
         int ret = 1;
 
-        ret = 50/GestorMazos.getMiGestorMazos().getNumeroPreguntasHoy();
-
+        int numPreguntas = GestorMazos.getMiGestorMazos().getNumeroPreguntasHoy();
+        if(numPreguntas > 0)
+        {
+            ret = 50/numPreguntas;
+        }
+        Log.d("MIO", "Huevo aumento de felicidad : numePreguntas :" + numPreguntas  + " ret: " + ret);
         return ret;
     }
 

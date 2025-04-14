@@ -25,6 +25,10 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
     private String fragmentoActual = "";
     private String usuario = "";
 
+    // Datos de DB cargados
+    private boolean preguntasCargadas = false;
+    private boolean huevoCargado = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -205,9 +209,10 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
     // ----------------------------------- Listener BD ---------------------
 
     @Override
-    public void todoCargado()
+    public void preguntasCargadas()
     {
-        iniciarAplicacion();
+        preguntasCargadas = true;
+        intentarIniciarAplicacion();
     }
 
     @Override
@@ -215,6 +220,25 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
     {
         Toast.makeText(this, "Ha ocurrido un error en la base de datos", Toast.LENGTH_SHORT).show();
     }
+
+    @Override
+    public void huevoCargado()
+    {
+        huevoCargado = true;
+        intentarIniciarAplicacion();
+    }
+
+    private void intentarIniciarAplicacion()
+    {
+        if(preguntasCargadas && huevoCargado)
+        {
+            iniciarAplicacion();
+        }
+    }
+
+
+
+
 
 
 

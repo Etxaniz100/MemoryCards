@@ -62,7 +62,7 @@ public class MostrarListaMazos extends Fragment {
 
         listaMazos = GestorMazos.getMiGestorMazos().getListaMazos();
 
-        GestorMazos.inicializarTodo(this.getContext(), false);
+        //GestorMazos.inicializarTodo(this.getContext(), false);
     }
 
     @Override
