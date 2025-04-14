@@ -3,10 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true">
 
+    <!--
     <item
         android:id="@+id/resetear_aplicacion"
         android:icon="@drawable/delete_forever_24px"
         android:title="@string/resetear_aplicación" />
+        -->
     <item
         android:id="@+id/inspiracion"
         android:icon="@drawable/captive_portal_24px"

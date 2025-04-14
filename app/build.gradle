@@ -56,5 +56,12 @@ dependencies {
 
     // Para conexion a DB remota
     implementation 'androidx.work:work-runtime:2.7.1'
+
+    // Para mapa
+    implementation ('org.osmdroid:osmdroid-android:6.1.16') {
+        exclude group: 'com.j256.ormlite', module: 'ormlite-core'
+    }
+    implementation 'org.osmdroid:osmdroid-wms:6.1.16'
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
 }
 

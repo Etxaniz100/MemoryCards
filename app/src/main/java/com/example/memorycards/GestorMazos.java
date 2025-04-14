@@ -730,8 +730,7 @@ public class GestorMazos
                                 String[] colores = {"rojo", "verde", "gris"};
                                 huevo = new GestorHuevo("???", 75, 75, Calendar.getInstance().getTime(), colores[rd.nextInt(colores.length)]);
 
-                                //TODO
-                                //subirNuevoHuevo(context, usuario, owner);
+                                subirHuevo(context, huevo, owner);
                             }
                             listener.huevoCargado();
                         }

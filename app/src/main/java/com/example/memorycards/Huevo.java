@@ -121,6 +121,18 @@ public class Huevo extends Fragment {
             }
         });
 
+        // ------------------------- MAPA --------------------------------
+        ImageView iconoMapa = (ImageView) view.findViewById(R.id.imagen_ir_mapa);
+
+        iconoMapa.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                listener.irMapa();
+            }
+        });
+
 
         // ------------------------- ABRIR HUEVO ------------------------------------
 
@@ -409,5 +421,6 @@ public class Huevo extends Fragment {
         void huevoAbierto();
 
         void huevoCaducado();
+        void irMapa();
     }
 }

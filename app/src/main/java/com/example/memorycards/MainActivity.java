@@ -1,5 +1,6 @@
 package com.example.memorycards;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -37,7 +38,8 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
                                                                 MostrarMazo.ListenerFragmentMostrarMazo,
                                                                 Estudiar.ListenerFragmentEstudiar,
                                                                 NuevaPregunta.ListenerFragmentNuevaCarta,
-                                                                Huevo.ListenerFragmentHuevo
+                                                                Huevo.ListenerFragmentHuevo,
+                                                                Mapa.ListenerFragmentMapa
 {
     // En main se tiene la funcionalidad de la toolbar, cajon desplegable y fragmentView
     // Se compone de dos layouts:
@@ -192,6 +194,15 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
             }
         }
 
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 30);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 30);
+        }
+
 
         // --------------------------------- Abrir fragmento ------------------------------------
 
@@ -219,6 +230,11 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
             case "huevo":
                 getSupportFragmentManager().popBackStack();
                 abrirFragmentoHuevo();
+                break;
+
+            case "mapa":
+                getSupportFragmentManager().popBackStack();
+                abrirFragmentoMapa();
                 break;
 
             case "":
@@ -304,10 +320,10 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
             case android.R.id.home:
                 menuDesplegable.openDrawer(GravityCompat.START);
                 return true;
-
+/*
             case R.id.resetear_aplicacion:
                 preguntarBorrarTodo();
-                break;
+                break;*/
 
             case R.id.inspiracion:
 
@@ -345,10 +361,7 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.remove("idioma");
                 editor.apply();
-                // TODO
-                //gestorMazos.reset(getBaseContext());
-                //gestorMazos.inicializarTodo(getBaseContext(), true);
-                finish();
+                borrarTodo();
             }
         });
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -359,6 +372,11 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
         });
 
         builder.show();
+    }
+
+    private void borrarTodo()
+    {
+        gestorMazos.reset(this, this);
     }
 
 
@@ -485,6 +503,22 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
                 .addToBackStack(null)
                 .commit();
     }
+
+    public void abrirFragmentoMapa()
+    {
+        fragmentoActual = "mapa";
+        cambiarTitulo("");
+
+        Bundle bundle = new Bundle();
+
+        getSupportFragmentManager().beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.fragment_container_view, Mapa.class, bundle)
+                .addToBackStack(null)
+                .commit();
+    }
+
+
 
     // -------------------------------------- Recuperacion de fragmentos -------------------------------------------
 
@@ -658,6 +692,28 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
     {
         getSupportFragmentManager().popBackStack();
         abrirFragmentoHuevo();
+    }
+
+    @Override
+    public void irMapa()
+    {
+        getSupportFragmentManager().popBackStack();
+        abrirFragmentoMapa();
+    }
+
+
+
+
+    // -------------------------- Fragment Mapa ----------------------------------------
+
+    @Override
+    public void mapaIniciado()
+    {
+        cartaActual = null;
+        respuestaMostrada = false;
+        preguntaAMedias = "";
+        respuestaAMedias = "";
+        fragmentoActual = "mapa";
     }
 
 
