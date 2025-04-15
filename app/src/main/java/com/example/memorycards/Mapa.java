@@ -106,7 +106,7 @@ public class Mapa extends Fragment {
 
     private void actualizarContador()
     {
-        contador.setText(""+GestorMazos.getNumeroHuevos());
+        contador.setText(""+GestorMazos.getCantidadComida());
     }
 
     private void obtenerPersmisos()
@@ -285,8 +285,7 @@ public class Mapa extends Fragment {
 
                                 if(posicionComida.distanceToAsDouble(miPosicion) < distanciaCercania)
                                 {
-                                    // TODO Borrar huevo de base de datos
-                                    GestorMazos.setNumeroHuevos(GestorMazos.getNumeroHuevos()+1);
+                                    GestorMazos.setCantidadComida(GestorMazos.getCantidadComida()+1, getContext(), getActivity());
                                     mapa.getOverlays().remove(marker);
                                     actualizarContador();
                                     GestorMazos.getMiGestorMazos().quitarPosicion(getContext(), u, getActivity());

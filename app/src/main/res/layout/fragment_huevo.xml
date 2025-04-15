@@ -101,10 +101,42 @@
         android:layout_height="77dp"
         android:layout_marginEnd="20dp"
         android:src="@drawable/map_24px"
+        android:tint="#847B97"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imagen_huevo"
         app:layout_constraintTop_toTopOf="@+id/imagen_huevo"
         app:layout_constraintVertical_bias="0.07999998" />
+
+    <ImageView
+        android:id="@+id/imagen_dar_comida"
+        android:layout_width="77dp"
+        android:layout_height="77dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="20dp"
+        android:src="@drawable/cookie_24px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imagen_huevo"
+        app:layout_constraintTop_toBottomOf="@+id/imagen_ir_mapa"
+        app:layout_constraintVertical_bias="0.0"
+        app:tint="#9B5D56" />
+
+    <TextView
+        android:id="@+id/texto_cantidad_comida"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="2dp"
+        android:text="35"
+        android:textColor="#334DA6"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imagen_dar_comida"
+        app:layout_constraintEnd_toEndOf="@+id/imagen_dar_comida"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/imagen_dar_comida"
+        app:layout_constraintTop_toTopOf="@+id/imagen_dar_comida"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

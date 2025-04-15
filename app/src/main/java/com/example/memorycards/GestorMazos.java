@@ -32,7 +32,7 @@ public class GestorMazos
     private static String usuario;
     private static ArrayList<UbicacionComida> listaPosicionesComidas;
 
-    private static int numeroHuevos = 0;
+    private static int cantidadComida = 100;
 
     public static GestorMazos getMiGestorMazos()
     {
@@ -269,217 +269,6 @@ public class GestorMazos
     }
 
 
-
-
-    // --------------------------------- OTROS ------------------------------
-    /*
-    public static void inicializarTodo(Context context, boolean forzar)
-    {
-        try
-        {
-
-
-            if(inicializado && !forzar)
-            {
-                return;
-            }
-
-            // ----------------------------------------------------------------------------------
-
-            BaseDatos GestorDB = new BaseDatos (context, "NombreBD", null, 1);
-            SQLiteDatabase bd = GestorDB.getWritableDatabase();
-
-            Cursor c = bd.rawQuery("SELECT * FROM Mazo", null);
-
-            while (c.moveToNext())
-            {
-                String nombre = c.getString(0);
-                Mazo mazo = new Mazo(nombre, "Morado");
-                listaMazos.add(mazo);
-            }
-
-            for (Mazo mazo: listaMazos)
-            {
-                String[] argumentos = new String[] {mazo.getNombre()};
-                c = bd.query("Carta",null,"NombreMazo==?",argumentos,null,null,null);
-
-                while (c.moveToNext())
-                {
-                    String pregunta = c.getString(0);
-                    String nombreMazo = c.getString(1);
-                    String respuesta = c.getString(2);
-                    int estado = (c.getInt(3));
-
-                    String proximoEstudio = c.getString(4); //Fecha
-                    int diasEntreEstudios = c.getInt(5);
-                    boolean unaVezCorrecto = (c.getInt(6)==1);
-                    Carta nuevaCarta;
-                    try
-                    {
-                        Date fechaProximoEstudio = null;
-                        if (!proximoEstudio.isEmpty())
-                        {
-                            fechaProximoEstudio = formatoFecha.parse(proximoEstudio);
-                        }
-                        nuevaCarta = new Carta(pregunta, respuesta, fechaProximoEstudio, diasEntreEstudios, unaVezCorrecto, estado);
-                    }
-                    catch (Exception e)
-                    {
-                        nuevaCarta = new Carta(pregunta, respuesta, null, 0, unaVezCorrecto, estado);
-                    }
-
-                    switch (estado)
-                    {
-                        case 0:
-                            mazo.getPreguntasNuevas().add(nuevaCarta);
-                            break;
-
-                        case 1:
-                            mazo.getPreguntasEstudiando().add(nuevaCarta);
-                            break;
-
-                        case 2:
-                            mazo.getPreguntasEstudiadas().add(nuevaCarta);
-                            break;
-                    }
-                }
-            }
-
-
-            if(listaMazos.size() <= 0) {
-                // Diseño de software avanzado
-                Mazo m1 = new Mazo("Desarrollo Avanzado de Software", "Marron");
-                listaMazos.add(m1);
-                subirMazoBd(m1, context);
-
-                Carta carta = new Carta("¿Quién creó android?", "Andy Rubin y Chris White");
-                m1.preguntasNuevas.add(carta);
-                guardarCartaEnBd(m1, carta, context);
-
-                carta = new Carta("¿Qué versión de android salió en 2013", "KitKat");
-                m1.preguntasNuevas.add(carta);
-                guardarCartaEnBd(m1, carta, context);
-
-                carta = new Carta("¿Qué mamíferos ponen huevos?", "Las equidnas y ornitorrincos");
-                m1.preguntasNuevas.add(carta);
-                guardarCartaEnBd(m1, carta, context);
-
-                carta = new Carta("¿Cómo se llama realmente el Joker?", "Jack Oswald White");
-                m1.preguntasNuevas.add(carta);
-                guardarCartaEnBd(m1, carta, context);
-            }
-
-
-            // Nueva -> Carta nueva
-            // UltimosDiasEstudiados == 0 -> Carta estudiando
-
-
-            //----------------- HUEVO -----------------
-
-
-            //c.close();
-            //bd.close();
-
-            //GestorDB = new BaseDatos (context, "NombreBD", null, 1);
-            //bd = GestorDB.getWritableDatabase();
-            //c = bd.rawQuery("SELECT * FROM Huevo", null);
-            c = bd.query("Huevo", null, null, null, null, null, null);
-
-
-
-            huevo = null;
-            while (c.moveToNext())
-            {
-                String nombre = c.getString(0);
-                float progreso = c.getInt(1);
-                float felicidad = c.getInt(2);
-                String color = c.getString(4);
-
-                String ultimaVezAbierto = c.getString(3); //Fecha
-
-                Date fecha = null;
-                try {
-
-                    if (!ultimaVezAbierto.isEmpty()) {
-                        fecha = formatoFecha.parse(ultimaVezAbierto);
-                    }
-                }
-                catch (Exception e){}
-
-                huevo = new GestorHuevo(nombre, progreso, felicidad, fecha, color);
-                ContentValues nuevo = new ContentValues();
-                nuevo.put("Nombre", huevo.getNombre());
-                nuevo.put("Progreso", huevo.getProgreso());
-                nuevo.put("Felicidad", huevo.getFelicidad());
-                nuevo.put("Color", huevo.getColor());
-                Date hoy = Calendar.getInstance().getTime();
-                nuevo.put("UltimaVezAbierto", formatoFecha.format(hoy));
-                bd.update("Huevo", nuevo, "Nombre=?", new String[]{huevo.getNombre()});
-
-            }
-
-            if(huevo == null)
-            {
-                Random rd = new Random();
-                String[] colores = {"rojo", "verde", "gris"};
-                huevo = new GestorHuevo("???", 75, 75, Calendar.getInstance().getTime(), colores[rd.nextInt(colores.length)]);
-                ContentValues nuevo = new ContentValues();
-                nuevo.put("Nombre", huevo.getNombre());
-                nuevo.put("Progreso", huevo.getProgreso());
-                nuevo.put("Felicidad", huevo.getFelicidad());
-                nuevo.put("Color", huevo.getColor());
-                Date hoy = Calendar.getInstance().getTime();
-                nuevo.put("UltimaVezAbierto", formatoFecha.format(hoy));
-
-                bd.insert("Huevo", null, nuevo);
-            }
-
-
-            c.close();
-            bd.close();
-            inicializado = true;
-
-        }
-        catch (Exception e)
-        {
-            context.deleteDatabase("NombreBD");
-            inicializarTodo(context, false);
-        }
-    }
-    */
-
-    /*
-    private static ContentValues getContentValues(Carta carta, Mazo m)
-    {
-        ContentValues nuevo = new ContentValues();
-        nuevo.put("Pregunta", carta.pregunta);
-        nuevo.put("NombreMazo", m.getNombre());
-        nuevo.put("Respuesta", carta.respuesta);
-        nuevo.put("Estado", carta.getEstado());
-
-        if (carta.proximoEstudio == null)
-        {
-            nuevo.put("ProximoEstudio", "");
-        }
-        else
-        {
-            nuevo.put("ProximoEstudio", formatoFecha.format(carta.proximoEstudio));
-        }
-
-        // Nueva -> Carta nueva
-        // UltimosDiasEstudiados == 0 -> Carta estudiando
-        nuevo.put("DiasEntreEstudio", carta.diasEntreEstudio);
-        if(carta.unaVezCorrecto)
-        {
-            nuevo.put("UnaVezCorrecto", 1);
-        }
-        else
-        {
-            nuevo.put("UnaVezCorrecto", 0);
-        }
-        return nuevo;
-    }
-*/
     public void reset(Context context, LifecycleOwner owner)
     {
 
@@ -508,6 +297,7 @@ public class GestorMazos
         listener = (ListenerBaseDatos) context;
         cargarMazos(context, owner);
         cargarPosicionesComidas(context, owner);
+        cargarCantidadComida(context, owner);
         //cargarHuevo(context, usuario, owner);
     }
 
@@ -848,6 +638,71 @@ public class GestorMazos
 
     }
 
+    private void cargarCantidadComida(Context context, LifecycleOwner owner)
+    {
+        Data datosEntrada = new Data.Builder()
+                .putString("usuario", usuario)
+                .putString("funcion", "cargaComida")
+                .build();
+
+        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(conexionBDWebService.class).setInputData(datosEntrada).build();
+
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(otwr.getId())
+                .observe(owner, new Observer<WorkInfo>() {
+                    @Override
+                    public void onChanged(WorkInfo workInfo) {
+                        if(workInfo != null && workInfo.getState().isFinished())
+                        {
+                            if(workInfo.getOutputData() == null)
+                            {
+                                listener.error();
+                                return;
+                            }
+                            String resultado = workInfo.getOutputData().getString("resultado");
+
+                            if(resultado == null)
+                            {
+                                listener.error();
+                                return;
+                            }
+
+                            try
+                            {
+                                JSONObject json = new JSONObject(resultado);
+
+                                if(json != null)
+                                {
+
+                                    String tipo = json.getString("tipo");
+
+                                    if(tipo == null || tipo.equals("error"))
+                                    {
+                                        cantidadComida = 0;
+                                        return;
+                                    }
+
+                                    cantidadComida = json.getInt("cantidad");
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                listener.error();
+                                return;
+                            }
+                        }
+                    }
+                });
+        WorkManager.getInstance(context).enqueue(otwr);
+
+    }
+
+
+
+
+
+
+
+
     private static void funcionGenerica(Context context, LifecycleOwner owner, Data datosEntrada, String errorLog)
     {
         OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(conexionBDWebService.class).setInputData(datosEntrada).build();
@@ -912,14 +767,240 @@ public class GestorMazos
         return listaPosicionesComidas;
     }
 
-    public static int getNumeroHuevos()
+    public static int getCantidadComida()
     {
-        return numeroHuevos;
+        return cantidadComida;
     }
 
-    public static void setNumeroHuevos(int n)
+    public static void setCantidadComida(int n, Context context, LifecycleOwner owner)
     {
-        numeroHuevos = n;
+        cantidadComida = n;
+        Data datosEntrada = new Data.Builder()
+                .putString("usuario", usuario)
+                .putInt("cantidad", cantidadComida)
+                .putString("funcion", "subirComida")
+                .build();
+
+        funcionGenerica(context, owner, datosEntrada, "Subir cantidad");
+
     }
 
 }
+
+
+
+
+
+
+
+
+
+// --------------------------------- OTROS ------------------------------
+    /*
+    public static void inicializarTodo(Context context, boolean forzar)
+    {
+        try
+        {
+
+
+            if(inicializado && !forzar)
+            {
+                return;
+            }
+
+            // ----------------------------------------------------------------------------------
+
+            BaseDatos GestorDB = new BaseDatos (context, "NombreBD", null, 1);
+            SQLiteDatabase bd = GestorDB.getWritableDatabase();
+
+            Cursor c = bd.rawQuery("SELECT * FROM Mazo", null);
+
+            while (c.moveToNext())
+            {
+                String nombre = c.getString(0);
+                Mazo mazo = new Mazo(nombre, "Morado");
+                listaMazos.add(mazo);
+            }
+
+            for (Mazo mazo: listaMazos)
+            {
+                String[] argumentos = new String[] {mazo.getNombre()};
+                c = bd.query("Carta",null,"NombreMazo==?",argumentos,null,null,null);
+
+                while (c.moveToNext())
+                {
+                    String pregunta = c.getString(0);
+                    String nombreMazo = c.getString(1);
+                    String respuesta = c.getString(2);
+                    int estado = (c.getInt(3));
+
+                    String proximoEstudio = c.getString(4); //Fecha
+                    int diasEntreEstudios = c.getInt(5);
+                    boolean unaVezCorrecto = (c.getInt(6)==1);
+                    Carta nuevaCarta;
+                    try
+                    {
+                        Date fechaProximoEstudio = null;
+                        if (!proximoEstudio.isEmpty())
+                        {
+                            fechaProximoEstudio = formatoFecha.parse(proximoEstudio);
+                        }
+                        nuevaCarta = new Carta(pregunta, respuesta, fechaProximoEstudio, diasEntreEstudios, unaVezCorrecto, estado);
+                    }
+                    catch (Exception e)
+                    {
+                        nuevaCarta = new Carta(pregunta, respuesta, null, 0, unaVezCorrecto, estado);
+                    }
+
+                    switch (estado)
+                    {
+                        case 0:
+                            mazo.getPreguntasNuevas().add(nuevaCarta);
+                            break;
+
+                        case 1:
+                            mazo.getPreguntasEstudiando().add(nuevaCarta);
+                            break;
+
+                        case 2:
+                            mazo.getPreguntasEstudiadas().add(nuevaCarta);
+                            break;
+                    }
+                }
+            }
+
+
+            if(listaMazos.size() <= 0) {
+                // Diseño de software avanzado
+                Mazo m1 = new Mazo("Desarrollo Avanzado de Software", "Marron");
+                listaMazos.add(m1);
+                subirMazoBd(m1, context);
+
+                Carta carta = new Carta("¿Quién creó android?", "Andy Rubin y Chris White");
+                m1.preguntasNuevas.add(carta);
+                guardarCartaEnBd(m1, carta, context);
+
+                carta = new Carta("¿Qué versión de android salió en 2013", "KitKat");
+                m1.preguntasNuevas.add(carta);
+                guardarCartaEnBd(m1, carta, context);
+
+                carta = new Carta("¿Qué mamíferos ponen huevos?", "Las equidnas y ornitorrincos");
+                m1.preguntasNuevas.add(carta);
+                guardarCartaEnBd(m1, carta, context);
+
+                carta = new Carta("¿Cómo se llama realmente el Joker?", "Jack Oswald White");
+                m1.preguntasNuevas.add(carta);
+                guardarCartaEnBd(m1, carta, context);
+            }
+
+
+            // Nueva -> Carta nueva
+            // UltimosDiasEstudiados == 0 -> Carta estudiando
+
+
+            //----------------- HUEVO -----------------
+
+
+            //c.close();
+            //bd.close();
+
+            //GestorDB = new BaseDatos (context, "NombreBD", null, 1);
+            //bd = GestorDB.getWritableDatabase();
+            //c = bd.rawQuery("SELECT * FROM Huevo", null);
+            c = bd.query("Huevo", null, null, null, null, null, null);
+
+
+
+            huevo = null;
+            while (c.moveToNext())
+            {
+                String nombre = c.getString(0);
+                float progreso = c.getInt(1);
+                float felicidad = c.getInt(2);
+                String color = c.getString(4);
+
+                String ultimaVezAbierto = c.getString(3); //Fecha
+
+                Date fecha = null;
+                try {
+
+                    if (!ultimaVezAbierto.isEmpty()) {
+                        fecha = formatoFecha.parse(ultimaVezAbierto);
+                    }
+                }
+                catch (Exception e){}
+
+                huevo = new GestorHuevo(nombre, progreso, felicidad, fecha, color);
+                ContentValues nuevo = new ContentValues();
+                nuevo.put("Nombre", huevo.getNombre());
+                nuevo.put("Progreso", huevo.getProgreso());
+                nuevo.put("Felicidad", huevo.getFelicidad());
+                nuevo.put("Color", huevo.getColor());
+                Date hoy = Calendar.getInstance().getTime();
+                nuevo.put("UltimaVezAbierto", formatoFecha.format(hoy));
+                bd.update("Huevo", nuevo, "Nombre=?", new String[]{huevo.getNombre()});
+
+            }
+
+            if(huevo == null)
+            {
+                Random rd = new Random();
+                String[] colores = {"rojo", "verde", "gris"};
+                huevo = new GestorHuevo("???", 75, 75, Calendar.getInstance().getTime(), colores[rd.nextInt(colores.length)]);
+                ContentValues nuevo = new ContentValues();
+                nuevo.put("Nombre", huevo.getNombre());
+                nuevo.put("Progreso", huevo.getProgreso());
+                nuevo.put("Felicidad", huevo.getFelicidad());
+                nuevo.put("Color", huevo.getColor());
+                Date hoy = Calendar.getInstance().getTime();
+                nuevo.put("UltimaVezAbierto", formatoFecha.format(hoy));
+
+                bd.insert("Huevo", null, nuevo);
+            }
+
+
+            c.close();
+            bd.close();
+            inicializado = true;
+
+        }
+        catch (Exception e)
+        {
+            context.deleteDatabase("NombreBD");
+            inicializarTodo(context, false);
+        }
+    }
+    */
+
+    /*
+    private static ContentValues getContentValues(Carta carta, Mazo m)
+    {
+        ContentValues nuevo = new ContentValues();
+        nuevo.put("Pregunta", carta.pregunta);
+        nuevo.put("NombreMazo", m.getNombre());
+        nuevo.put("Respuesta", carta.respuesta);
+        nuevo.put("Estado", carta.getEstado());
+
+        if (carta.proximoEstudio == null)
+        {
+            nuevo.put("ProximoEstudio", "");
+        }
+        else
+        {
+            nuevo.put("ProximoEstudio", formatoFecha.format(carta.proximoEstudio));
+        }
+
+        // Nueva -> Carta nueva
+        // UltimosDiasEstudiados == 0 -> Carta estudiando
+        nuevo.put("DiasEntreEstudio", carta.diasEntreEstudio);
+        if(carta.unaVezCorrecto)
+        {
+            nuevo.put("UnaVezCorrecto", 1);
+        }
+        else
+        {
+            nuevo.put("UnaVezCorrecto", 0);
+        }
+        return nuevo;
+    }
+*/

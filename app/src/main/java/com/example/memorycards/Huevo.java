@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.system.StructTimespec;
+import android.os.CancellationSignal;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +19,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
-
-import java.nio.BufferUnderflowException;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -133,6 +129,19 @@ public class Huevo extends Fragment {
             }
         });
 
+        // ------------------------- COMIDA --------------------------------
+        ImageView iconoGalleta = (ImageView) view.findViewById(R.id.imagen_dar_comida);
+        TextView cantidaComida = (TextView) view.findViewById(R.id.texto_cantidad_comida);
+        cantidaComida.setText(""+GestorMazos.getCantidadComida());
+        iconoGalleta.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                darComida(view);
+            }
+        });
+
 
         // ------------------------- ABRIR HUEVO ------------------------------------
 
@@ -154,11 +163,77 @@ public class Huevo extends Fragment {
             botonAbrir.setVisibility(View.INVISIBLE);
         }
 
-
-
-
         listener.huevoIniciado();
 
+    }
+
+    // ------------------------ COmida ----------
+
+    private void darComida(View v)
+    {
+        TextView cantidaComida = (TextView) v.findViewById(R.id.texto_cantidad_comida);
+        int comida = GestorMazos.getCantidadComida();
+        if(comida <= 0 || huevo == null || huevo.getProgreso() >= 100 || huevo.getEstadoFelicidad().equals("caducado"))
+        {
+            return;
+        }
+
+        GestorMazos.setCantidadComida(comida-1, getContext(), getActivity());
+        cantidaComida.setText(""+GestorMazos.getCantidadComida());
+
+        huevo.alimentar(getContext(), getActivity());
+
+        ImageView imagenHuevo = (ImageView) v.findViewById(R.id.imagen_huevo);
+        setImagenHuevo(imagenHuevo);
+
+        ImageView imagenEstadoHuevo = (ImageView) v.findViewById(R.id.imagen_estado);
+        setEstado(imagenEstadoHuevo);
+
+        ProgressBar barraProgreso = (ProgressBar) v.findViewById(R.id.progreso_huevo);
+        barraProgreso.setProgress((int)huevo.getProgreso());
+
+        Button botonAbrir = v.findViewById(R.id.button_abrir);
+
+        if(huevo != null && huevo.getProgreso() >= 100)
+        {
+            botonAbrir.setVisibility(View.VISIBLE);
+            botonAbrir.setOnClickListener(va -> abrirHuevo());
+        }
+        else if(huevo != null && huevo.getEstadoFelicidad().equals("caducado"))
+        {
+            botonAbrir.setVisibility(View.VISIBLE);
+            botonAbrir.setText(getContext().getResources().getString(R.string.nuevo_huevo));
+            botonAbrir.setOnClickListener(va -> nuevoHuevo());
+        }
+        else
+        {
+            botonAbrir.setVisibility(View.INVISIBLE);
+        }
+
+        ImageView iconoGalleta = (ImageView) v.findViewById(R.id.imagen_dar_comida);
+        iconoGalleta.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+
+            }
+        });
+        iconoGalleta.setAlpha(0.5f);
+
+
+        iconoGalleta.postDelayed(() ->
+                {
+                    iconoGalleta.setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View view)
+                        {
+                            darComida(v);
+                        }
+                    }) ;
+                    iconoGalleta.setAlpha(1f);
+                }, 1000);
     }
 
     // ------------------------- Huevo ------------------------

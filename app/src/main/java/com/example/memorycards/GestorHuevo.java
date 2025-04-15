@@ -304,4 +304,26 @@ public class GestorHuevo
 
         return cantidadProgresada;
     }
+
+    public void alimentar(Context context, LifecycleOwner owner)
+    {
+        progreso += 5;
+        felicidad += 5;
+
+
+        if(progreso >= 100)
+        {
+            progreso = 100;
+        }
+
+        if(felicidad >= 100)
+        {
+            felicidad = 100;
+        }
+
+        estadoActual = calcularEstado(felicidad);
+
+
+        GestorMazos.getMiGestorMazos().subirHuevo(context, this, owner);
+    }
 }
