@@ -270,9 +270,56 @@ public class conexionBDWebService extends Worker
 
                 case "borrarHuevo":
                     Log.d("MIO", "Borrando huevo...");
-                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8") + "&mazo=" + URLEncoder.encode(nombreMazo, "UTF-8")+ "&funcion=" + URLEncoder.encode("borrar", "UTF-8");
+                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8") + "&funcion=" + URLEncoder.encode("borrar", "UTF-8");
                     resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/gestionarhuevo.php", parametros);
                     Log.d("MIO", "Resultado borrar huevo : " + resultado);
+                    resultadoData = new Data.Builder()
+                            .putString("resultado", resultado)
+                            .build();
+                    break;
+
+                // ------------------------- MAPA ----------------------------------------------------------------------------------------------------------
+                case "cargaPosiciones":
+                    Log.d("MIO", "Cargando posiciones huevos...");
+                    parametros = "user=" + URLEncoder.encode(usuario, "UTF-8") + "&funcion=" + URLEncoder.encode("obtenerposiciones", "UTF-8");
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/gestionarhuevo.php", parametros);
+                    Log.d("MIO", "Resultado Cargando posiciones huevos : " + resultado);
+                    resultadoData = new Data.Builder()
+                            .putString("resultado", resultado)
+                            .build();
+                    break;
+
+                case "subirPosicion":
+                    Log.d("MIO", "Subiendo posicion...");
+
+                    double longitud = getInputData().getDouble("longitud", 0);
+                    double latitud = getInputData().getDouble("latitud", 0);
+
+
+                    parametros =    "user=" + URLEncoder.encode(usuario, "UTF-8")
+                                +   "&funcion=" + URLEncoder.encode("huevonuevo", "UTF-8")
+                                +   "&longitud=" + URLEncoder.encode(""+longitud, "UTF-8")
+                                +   "&latitud=" + URLEncoder.encode(""+latitud, "UTF-8");
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/gestionarhuevo.php", parametros);
+
+                    Log.d("MIO", "Resultado subir posicion : " + resultado);
+                    resultadoData = new Data.Builder()
+                            .putString("resultado", resultado)
+                            .build();
+                    break;
+
+                case "borrarPosicion":
+                    Log.d("MIO", "Borrando posicion...");
+
+                    longitud = getInputData().getDouble("longitud", 0);
+                    latitud = getInputData().getDouble("latitud", 0);
+
+                    parametros =    "user=" + URLEncoder.encode(usuario, "UTF-8")
+                            +   "&funcion=" + URLEncoder.encode("huevorecogido", "UTF-8")
+                            +   "&longitud=" + URLEncoder.encode(""+longitud, "UTF-8")
+                            +   "&latitud=" + URLEncoder.encode(""+latitud, "UTF-8");
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/gestionarhuevo.php", parametros);
+                    Log.d("MIO", "Resultado borrar posicion : " + resultado);
                     resultadoData = new Data.Builder()
                             .putString("resultado", resultado)
                             .build();

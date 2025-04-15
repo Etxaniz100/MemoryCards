@@ -1,9 +1,7 @@
 package com.example.memorycards;
 
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
@@ -32,6 +30,9 @@ public class GestorMazos
     private static boolean inicializado = false;
     private static GestorHuevo huevo;
     private static String usuario;
+    private static ArrayList<UbicacionComida> listaPosicionesComidas;
+
+    private static int numeroHuevos = 0;
 
     public static GestorMazos getMiGestorMazos()
     {
@@ -39,11 +40,19 @@ public class GestorMazos
         {
             miGestorMazos = new GestorMazos();
             listaMazos = new ArrayList<Mazo>();
+            listaPosicionesComidas = new ArrayList<UbicacionComida>();
             formatoFecha = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         }
         return miGestorMazos;
     }
 
+    public static void limpiar()
+    {
+        listaMazos = null;
+        listaMazos = new ArrayList<Mazo>();
+        huevo = null;
+
+    }
     public ArrayList<Mazo> getListaMazos()
     {
         return listaMazos;
@@ -220,6 +229,47 @@ public class GestorMazos
     {
         return huevo;
     }
+
+
+    // -------------------------------------- Gestion Posiciones ----------------------------------------
+
+    public void subirPosicion(Context context, UbicacionComida u, LifecycleOwner owner)
+    {
+        Data datosEntrada = new Data.Builder()
+                .putString("usuario", usuario)
+                .putDouble("longitud", u.longitud)
+                .putDouble("latitud", u.latitud)
+                .putString("funcion", "subirPosicion")
+                .build();
+
+        funcionGenerica(context, owner, datosEntrada, "Subir posicion");
+    }
+    public void eliminarPosicion(Context context, UbicacionComida u, LifecycleOwner owner)
+    {
+        Data datosEntrada = new Data.Builder()
+                .putString("usuario", usuario)
+                .putDouble("longitud", u.longitud)
+                .putDouble("latitud", u.latitud)
+                .putString("funcion", "borrarPosicion")
+                .build();
+
+        funcionGenerica(context, owner, datosEntrada, "Quitar posicion");
+    }
+
+    public void anadirPosicion(Context context, UbicacionComida u, LifecycleOwner owner)
+    {
+        listaPosicionesComidas.add(u);
+        subirPosicion(context, u, owner);
+    }
+
+    public void quitarPosicion(Context context, UbicacionComida u, LifecycleOwner owner)
+    {
+        listaPosicionesComidas.remove(u);
+        eliminarPosicion(context, u, owner);
+    }
+
+
+
 
     // --------------------------------- OTROS ------------------------------
     /*
@@ -457,6 +507,7 @@ public class GestorMazos
         usuario = usr;
         listener = (ListenerBaseDatos) context;
         cargarMazos(context, owner);
+        cargarPosicionesComidas(context, owner);
         //cargarHuevo(context, usuario, owner);
     }
 
@@ -739,6 +790,63 @@ public class GestorMazos
         WorkManager.getInstance(context).enqueue(otwr);
     }
 
+    private void cargarPosicionesComidas(Context context, LifecycleOwner owner)
+    {
+        Data datosEntrada = new Data.Builder()
+                .putString("usuario", usuario)
+                .putString("funcion", "cargaPosiciones")
+                .build();
+
+        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(conexionBDWebService.class).setInputData(datosEntrada).build();
+
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(otwr.getId())
+                .observe(owner, new Observer<WorkInfo>() {
+                    @Override
+                    public void onChanged(WorkInfo workInfo) {
+                        if(workInfo != null && workInfo.getState().isFinished())
+                        {
+                            if(workInfo.getOutputData() == null)
+                            {
+                                listener.error();
+                                return;
+                            }
+                            String resultado = workInfo.getOutputData().getString("resultado");
+
+                            if(resultado == null)
+                            {
+                                listener.error();
+                                return;
+                            }
+
+                            try
+                            {
+                                JSONObject json = new JSONObject(resultado);
+
+                                if(json != null) {
+
+                                    JSONArray arrayLugares = json.getJSONArray("lugares");
+
+                                    for (int i = 0; i < arrayLugares.length(); i++)
+                                    {
+                                        double longitud = arrayLugares.getJSONObject(i).getDouble("Longitud");
+                                        double latitud = arrayLugares.getJSONObject(i).getDouble("Latitud");
+
+                                        UbicacionComida u = new UbicacionComida(longitud, latitud, false);
+                                        listaPosicionesComidas.add(u);
+                                    }
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                listener.error();
+                                return;
+                            }
+                        }
+                    }
+                });
+        WorkManager.getInstance(context).enqueue(otwr);
+
+    }
 
     private static void funcionGenerica(Context context, LifecycleOwner owner, Data datosEntrada, String errorLog)
     {
@@ -795,6 +903,23 @@ public class GestorMazos
         void preguntasCargadas();
         void error();
         void huevoCargado();
+    }
+
+    // ------------------------------------------ Posiciones huevo ---------------------------------------------
+
+    public ArrayList<UbicacionComida> getListaPosicionesComidas()
+    {
+        return listaPosicionesComidas;
+    }
+
+    public static int getNumeroHuevos()
+    {
+        return numeroHuevos;
+    }
+
+    public static void setNumeroHuevos(int n)
+    {
+        numeroHuevos = n;
     }
 
 }

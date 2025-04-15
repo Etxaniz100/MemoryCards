@@ -697,7 +697,7 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
     @Override
     public void irMapa()
     {
-        getSupportFragmentManager().popBackStack();
+        //getSupportFragmentManager().popBackStack();
         abrirFragmentoMapa();
     }
 

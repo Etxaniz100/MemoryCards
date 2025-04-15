@@ -154,9 +154,8 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
     public void cargarBaseDeDatos()
     {
         GestorMazos gestorMazos = GestorMazos.getMiGestorMazos();
-
+        GestorMazos.limpiar();
         gestorMazos.cargarBaseDeDatos(this, usuario, this);
-
     }
 
 
@@ -179,6 +178,7 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
     @Override
     public void sesionIniciada(String usr)
     {
+
         usuario = usr;
         cargarBaseDeDatos();
     }
