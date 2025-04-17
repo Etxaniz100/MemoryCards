@@ -344,7 +344,6 @@ public class Huevo extends Fragment {
                     }
                 });
 
-
                 builder.show();
                 listener.huevoAbierto();
             }

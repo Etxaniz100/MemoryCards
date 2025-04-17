@@ -2,6 +2,9 @@ package com.example.memorycards;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
@@ -14,6 +17,8 @@ import androidx.work.WorkManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,6 +36,8 @@ public class GestorMazos
     private static GestorHuevo huevo;
     private static String usuario;
     private static ArrayList<UbicacionComida> listaPosicionesComidas;
+    private static Bitmap fotoPerfilUsuario;
+    public static String fotoPerfilTexto;
 
     private static int cantidadComida = 100;
 
@@ -298,7 +305,7 @@ public class GestorMazos
         cargarMazos(context, owner);
         cargarPosicionesComidas(context, owner);
         cargarCantidadComida(context, owner);
-        //cargarHuevo(context, usuario, owner);
+        cargarPerfilUsuario(context, owner);
     }
 
     private void cargarMazos(Context context, LifecycleOwner owner)
@@ -697,7 +704,67 @@ public class GestorMazos
     }
 
 
+    private void cargarPerfilUsuario(Context context, LifecycleOwner owner)
+    {
+        Data datosEntrada = new Data.Builder()
+                .putString("usuario", usuario)
+                .putString("funcion", "descargarFoto")
+                .build();
 
+        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(conexionBDWebService.class).setInputData(datosEntrada).build();
+
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(otwr.getId())
+                .observe(owner, new Observer<WorkInfo>() {
+                    @Override
+                    public void onChanged(WorkInfo workInfo) {
+                        if(workInfo != null && workInfo.getState().isFinished())
+                        {
+                            if(workInfo.getOutputData() == null)
+                            {
+                                listener.error();
+                                return;
+                            }
+                            //String resultado = workInfo.getOutputData().getString("resultado");
+                            String resultado = fotoPerfilTexto;
+
+                            if(resultado == null)
+                            {
+                                listener.error();
+                                return;
+                            }
+
+                            try
+                            {
+                                JSONObject json = new JSONObject(resultado);
+
+                                if(json != null)
+                                {
+                                    String tipo = json.getString("tipo");
+
+                                    if(tipo == null || tipo.equals("error"))
+                                    {
+                                        fotoPerfilUsuario = null;
+                                        listener.imagenCargada();
+                                        return;
+                                    }
+
+                                    String imagenBase64 = json.getString("imagen");
+                                    Log.d("MIO", "Tamaño Imagen base64 : " + imagenBase64.length());
+                                    fotoPerfilUsuario = BitmapFactory.decodeStream(new ByteArrayInputStream(Base64.decode(imagenBase64, Base64.DEFAULT)));
+                                    listener.imagenCargada();
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                listener.error();
+                                return;
+                            }
+                        }
+                    }
+                });
+        WorkManager.getInstance(context).enqueue(otwr);
+
+    }
 
 
 
@@ -758,6 +825,7 @@ public class GestorMazos
         void preguntasCargadas();
         void error();
         void huevoCargado();
+        void imagenCargada();
     }
 
     // ------------------------------------------ Posiciones huevo ---------------------------------------------
@@ -785,7 +853,34 @@ public class GestorMazos
 
     }
 
+    // ------------------------------ IMAGENES -------------------------------------------------
+
+    public static Bitmap getPerfilUsuario()
+    {
+        return fotoPerfilUsuario;
+    }
+
+    public static void setPerfilUsuario(Bitmap imagen, Context context, LifecycleOwner owner)
+    {
+        fotoPerfilUsuario = imagen;
+
+        /*
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        imagen.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        String imagenBase64 = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
+        */
+        Data datosEntrada = new Data.Builder()
+                .putString("usuario", usuario)
+                //.putString("imagen", imagenBase64)
+                .putString("funcion", "subirFoto")
+                .build();
+
+        funcionGenerica(context, owner, datosEntrada, "Subir imagen perfil usuario");
+
+    }
+
 }
+
 
 
 

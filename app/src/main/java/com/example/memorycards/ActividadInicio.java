@@ -28,6 +28,7 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
     // Datos de DB cargados
     private boolean preguntasCargadas = false;
     private boolean huevoCargado = false;
+    private boolean imagenCargada = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +74,6 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
 
     public boolean volverAtras()
     {
-        Toast.makeText(this, "" + getSupportFragmentManager().getBackStackEntryCount(), Toast.LENGTH_SHORT).show();
         return getSupportFragmentManager().popBackStackImmediate();
     }
 
@@ -228,9 +228,17 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
         intentarIniciarAplicacion();
     }
 
+    @Override
+    public void imagenCargada()
+    {
+        imagenCargada = true;
+        intentarIniciarAplicacion();
+    }
+
+
     private void intentarIniciarAplicacion()
     {
-        if(preguntasCargadas && huevoCargado)
+        if(preguntasCargadas && huevoCargado && imagenCargada)
         {
             iniciarAplicacion();
         }

@@ -6,12 +6,15 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import android.graphics.Bitmap;
+import android.util.Base64;
 import android.util.Log;
 
 import androidx.work.Data;
@@ -350,6 +353,47 @@ public class conexionBDWebService extends Worker
                             .putString("resultado", resultado)
                             .build();
                     break;
+
+                    // ----------------------- IMAGENES --------------------------------------------
+
+                case "subirFoto":
+                    Log.d("MIO", "Subiendo foto...");
+
+                    Bitmap imagen = GestorMazos.getPerfilUsuario();
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    // No es necesarios guardar toda la calidad de la imagen, que luego se ve en pequeño
+                    imagen.compress(Bitmap.CompressFormat.JPEG, 30, stream);
+                    String imagenBase64 = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
+
+                    //String imagenBase64 = getInputData().getString("imagen");
+
+                    parametros =    "user=" + URLEncoder.encode(usuario, "UTF-8")
+                            +   "&funcion=" + URLEncoder.encode("subir", "UTF-8")
+                            +   "&imagen=" + URLEncoder.encode(imagenBase64, "UTF-8");
+
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/gestionarimagen.php", parametros);
+
+                    Log.d("MIO", "Resultado subir foto : " + resultado);
+                    resultadoData = new Data.Builder()
+                            .putString("resultado", resultado)
+                            .build();
+                    break;
+
+                case "descargarFoto":
+                    Log.d("MIO", "Descargando foto...");
+
+                    parametros =    "user=" + URLEncoder.encode(usuario, "UTF-8")
+                            +   "&funcion=" + URLEncoder.encode("obtener", "UTF-8");
+
+                    resultado = conexionGenerica("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/eetxaniz006/WEB/gestionarimagen.php", parametros);
+
+                    GestorMazos.fotoPerfilTexto = resultado;
+                    Log.d("MIO", "Resultado descargar foto : " + resultado.length());
+                    resultadoData = new Data.Builder()
+                            //.putString("resultado", resultado)
+                            .build();
+                    break;
+
 
                 default:
                     return Result.failure();

@@ -1,13 +1,20 @@
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Base application theme. -->
-    <style name="Base.Theme.MemoryCards" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="Base.Theme.MemoryCards" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <item name="colorPrimary">@color/dark_secondary</item>
         <item name="backgroundTint">@color/dark_primary</item>
         <!--<item name="colorSecondary">@color/dark_secondary</item>-->
         <item name="android:fontFamily">@font/simply_sans_book</item>
 
+        <item name="colorOnPrimary">#C4C8D7</item>
+
     </style>
+
+    <style name="CircularImageStyle" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerSize">50%</item>
+    </style>
+
 
 </resources>
 

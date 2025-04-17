@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="211dp"
@@ -18,4 +19,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/header" />
+
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/perfil_usuario"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/CircularImageStyle"
+        app:srcCompat="@drawable/account_circle_24px" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

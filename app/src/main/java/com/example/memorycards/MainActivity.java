@@ -9,20 +9,31 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
@@ -32,6 +43,8 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.io.File;
+import java.util.Date;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements  MostrarListaMazos.ListenerFragmentListaMazos,
@@ -67,6 +80,54 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
 
     private String preguntaAMedias;
     private String respuestaAMedias;
+
+    // ----------------------------------------- Imagenes
+
+    private Uri uriImagen;
+    private File archivoImagen;
+    private ImageView fotoPerfilUsuario;
+
+
+    private ActivityResultLauncher<PickVisualMediaRequest> abrirGaleria =
+            registerForActivityResult(  new ActivityResultContracts.PickVisualMedia()
+                                        , uri ->
+                                        {
+                                            if (uri != null)
+                                            {
+                                                fotoPerfilUsuario.setImageURI(uri);
+                                                subirImagen(uri);
+                                            }
+                                            else
+                                            {
+                                                Log.d("MIO", "No se ha seleccionado imagen");
+                                            }
+                                        }
+                                        );
+
+    private ActivityResultLauncher<Intent> tomarFotoCamara =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        Log.d("MIO", "Resultado sacar foto :" + result.getResultCode());
+                        if (result.getResultCode() == RESULT_OK)
+                        {
+                            try
+                            {
+                                Bitmap imagen = MediaStore.Images.Media.getBitmap(getContentResolver(), uriImagen);
+
+                                fotoPerfilUsuario.setImageBitmap(imagen);
+                                GestorMazos.setPerfilUsuario(imagen, this, this);
+                                if (archivoImagen.exists())
+                                {
+                                    archivoImagen.delete();
+                                }
+                            } catch (Exception e)
+                            {
+                                Log.e("MIO", "Error al cargar la imagen de la cámara", e);
+                            }
+                        } else {
+                            Log.d("MIO", "No se ha sacado foto");
+                        }
+                    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -162,6 +223,9 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
             }
         });
 
+
+
+
         // Para que se cierre el menu desplegable al pulsar atras
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -180,6 +244,34 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
                 }
             }
         });
+
+        // -------------------------------------------- Imagenes ------------------------------
+
+        View headerView = navigationView.getHeaderView(0);
+        fotoPerfilUsuario = headerView.findViewById(R.id.perfil_usuario);
+
+        if(fotoPerfilUsuario != null)
+        {
+            fotoPerfilUsuario.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    escogerFoto();
+                }
+            });
+
+            Bitmap foto = GestorMazos.getPerfilUsuario();
+            if(foto != null)
+            {
+                Log.d("MIO", "GestorMazos.getPerfilUsuario() != null");
+                fotoPerfilUsuario.setImageBitmap(GestorMazos.getPerfilUsuario());
+            }
+        }
+        else
+        {
+            Log.d("MIO", "No se ha encontrado la imagen view");
+        }
 
         // +----------------------------------- Notificaciones ----------------------------------------+
         // |                                                                                           |
@@ -201,6 +293,11 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 30);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, 30);
         }
 
 
@@ -245,6 +342,70 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
                 break;
         }
     }
+
+    // -------------------------------------------- ABRIR SELECCION CAMARA ----------------------------------------
+
+    private void escogerFoto()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Selecciona tipo de imagen"); //TODO: Idiomas
+
+        LinearLayout layoutName = new LinearLayout(getBaseContext());
+        layoutName.setOrientation(LinearLayout.VERTICAL);
+
+        builder.setView(layoutName);
+
+        builder.setPositiveButton("Camara", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
+
+                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+                archivoImagen = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "IMG_" + timeStamp + ".jpg");
+                uriImagen = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".provider", archivoImagen);
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, uriImagen);
+                tomarFotoCamara.launch(intent);
+            }
+        });
+
+        builder.setNegativeButton("Galeria", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
+                abrirGaleria.launch(new PickVisualMediaRequest
+                        .Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageAndVideo.INSTANCE)
+                        .build());
+            }
+        });
+
+        builder.setNeutralButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void subirImagen(Uri uri)
+    {
+        try
+        {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+            GestorMazos.setPerfilUsuario(bitmap, this, this);
+        }
+        catch (Exception e)
+        {
+            Log.e("MIO", "Error al subir imagen", e);
+        }
+    }
+
 
     // ---------------------------------------------------------- IDIOMA ------------------------------------------------------------
 

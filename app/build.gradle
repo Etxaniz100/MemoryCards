@@ -63,5 +63,9 @@ dependencies {
     }
     implementation 'org.osmdroid:osmdroid-wms:6.1.16'
     implementation 'com.google.android.gms:play-services-location:21.3.0'
+
+    // Para cambiar la forma de la foto de perfil
+    implementation 'com.google.android.material:material:1.11.0'
+
 }
 
