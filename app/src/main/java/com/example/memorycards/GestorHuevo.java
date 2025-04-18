@@ -1,10 +1,17 @@
 package com.example.memorycards;
 
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.LifecycleOwner;
 
@@ -24,6 +31,7 @@ public class GestorHuevo
     private String colorHuevo; // rojo, verde, gris
     private String[] colores = {"rojo", "verde", "gris"};
     private int ratio;
+    private float potenciaComida = 50;
 
     public GestorHuevo()
     {
@@ -105,11 +113,17 @@ public class GestorHuevo
 
     public void setNombre(String nuevoNombre, Context context, LifecycleOwner owner)
     {
-        //GestorMazos.getMiGestorMazos().actualizarNombreHuevo(context, nuevoNmbre);
-        //GestorMazos.getMiGestorMazos().borrarHuevo(context, this);
+        try
+        {
+            SharedPreferences sharedPref = context.getSharedPreferences("preferencias", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("nombre_huevo", nuevoNombre);
+            editor.apply();
+        }
+        catch (Exception e){}
+
         nombre = nuevoNombre;
         GestorMazos.getMiGestorMazos().subirHuevo(context, this, owner);
-        //GestorMazos.getMiGestorMazos().nuevoHuevoBD(context, this);
     }
 
     public int calcularAumentoFelicidad()
@@ -244,6 +258,8 @@ public class GestorHuevo
 
         }
         GestorMazos.getMiGestorMazos().subirHuevo(context, this, owner);
+
+
     }
 
     public float getFelicidad() {
@@ -307,8 +323,8 @@ public class GestorHuevo
 
     public void alimentar(Context context, LifecycleOwner owner)
     {
-        progreso += 5;
-        felicidad += 5;
+        progreso += potenciaComida;
+        felicidad += potenciaComida;
 
 
         if(progreso >= 100)
@@ -325,5 +341,57 @@ public class GestorHuevo
 
 
         GestorMazos.getMiGestorMazos().subirHuevo(context, this, owner);
+    }
+
+    // ----------------------------------------------------- ALARMA DE ECLOSION ------------------------------------
+
+    public Date calcularFechaTriste()
+    {
+        Date ret = Calendar.getInstance().getTime();
+
+        float felicidadActual = felicidad;
+        float felicidadTriste = 39;
+
+        if(felicidadActual <= felicidadTriste)
+        {
+            Log.d("MIO", "calcularFechaTriste huevo ya esta triste");
+            return null;
+        }
+
+        float horasHastaTriste = felicidadActual - felicidadTriste;
+
+        //ret.setTime(ret.getTime() + (long) (horasHastaTriste * 3600000));
+        ret.setTime(ret.getTime() + (long) (1000*30));
+
+        Log.d("MIO", "Horas hasta triste: " + horasHastaTriste + " | fecha notificacion :" + ret.toString());
+        return ret;
+    }
+
+    @SuppressLint("ScheduleExactAlarm")
+    public void actualizarAlarma(Date fecha, Context context)
+    {
+        if(fecha == null)
+        {
+            Log.d("MIO", "actualizarAlarma fecha null");
+            return;
+        }
+        AlarmManager gestor = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        // Intent que será lanzado por la alarma
+        Intent intent = new Intent(context, ReceptorAlarma.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        // Cancelar la alarma anterior si existe
+        gestor.cancel(pendingIntent);
+
+        android.icu.util.Calendar calendario = android.icu.util.Calendar.getInstance();
+        if(calendario == null)
+        {
+            Log.d("MIO", "calendario null");
+            return;
+        }
+        calendario.setTime(fecha);
+
+        gestor.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendario.getTimeInMillis(), pendingIntent);
     }
 }

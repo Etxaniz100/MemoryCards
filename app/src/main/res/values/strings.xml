@@ -39,9 +39,9 @@
     <string name="borrar_mazo">¿Quieres borrar este mazo?</string>
     <string name="notificacion_caducado">nombre ha caducado</string>
     <string name="notificacion_muy_triste">¡nombre está muy triste!</string>
-    <string name="notificacion_triste">nombre esta triste</string>
+    <string name="notificacion_triste">nombre está triste</string>
     <string name="notificacion_neutral">nombre no se encuentra bien</string>
-    <string name="notificacion_feliz">nombre esta feliz</string>
+    <string name="notificacion_feliz">nombre está feliz</string>
     <string name="notificacion_muy_feliz">¡nombre está muy feliz!</string>
     <string name="nuevo_huevo">Obtener nuevo huevo</string>
     <string name="no_mas_cartas_des">Vuelve mañana para seguir estudiando</string>
@@ -53,4 +53,17 @@
     <string name="usuario">Usuario</string>
     <string name="contrasena">Contraseña</string>
     <string name="contrasena_re">Repetir contraseña</string>
+    <string name="titulo_aviso_mapa">Comida demasiado lejos</string>
+    <string name="aviso_distancia">La comida está a</string>
+    <string name="titulo_aviso_sin_ubicacion">Ubicación desactivada</string>
+    <string name="aviso_sin_ubicacion">Activa la ubicación para utilizar esta función</string>
+    <string name="titulo_seleccionar_foto">Selecciona una imagen</string>
+    <string name="galeria">Galeria</string>
+    <string name="camara">Cámara</string>
+    <string name="campo_obligatorio">Este campo es obligatorio</string>
+    <string name="contrasena_no_coincide">Las contraseñas no coinciden</string>
+    <string name="error_inesperado">Error inesperado</string>
+    <string name="usuario_existe">Usuario existente</string>
+    <string name="usuario_no_encontrado">Usuario no encontrado</string>
+    <string name="contrasena_incorrecta">Contraseña incorrecta</string>
 </resources>

@@ -15,13 +15,18 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <!-- Para la camara -->
-
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <uses-feature android:name="android.hardware.camera2.full" android:required="true"/>
     <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+    <!-- Para content provider -->
+    <uses-permission android:name="android.permission.WRITE_USER_DICTIONARY"/>
+
+    <!-- Para alarma -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
         android:allowBackup="true"
@@ -59,6 +64,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/configuracion_almacen" />
         </provider>
+
+        <!-- Para la alarma -->
+        <receiver android:name=".ReceptorAlarma" />
     </application>
 
 </manifest>

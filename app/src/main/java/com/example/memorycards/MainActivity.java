@@ -1,7 +1,9 @@
 package com.example.memorycards;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.icu.text.SimpleDateFormat;
+import android.icu.util.Calendar;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -300,6 +303,21 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, 30);
         }
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_CALENDAR}, 30);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CALENDAR}, 30);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SCHEDULE_EXACT_ALARM) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.SCHEDULE_EXACT_ALARM}, 30);
+        }
+
 
         // --------------------------------- Abrir fragmento ------------------------------------
 
@@ -348,14 +366,14 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
     private void escogerFoto()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Selecciona tipo de imagen"); //TODO: Idiomas
+        builder.setTitle(R.string.titulo_seleccionar_foto); //TODO: Idiomas
 
         LinearLayout layoutName = new LinearLayout(getBaseContext());
         layoutName.setOrientation(LinearLayout.VERTICAL);
 
         builder.setView(layoutName);
 
-        builder.setPositiveButton("Camara", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.camara, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which)
             {
@@ -370,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
             }
         });
 
-        builder.setNegativeButton("Galeria", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.galeria, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which)
             {
@@ -382,7 +400,8 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
             }
         });
 
-        builder.setNeutralButton("Cancelar", new DialogInterface.OnClickListener() {
+
+        builder.setNeutralButton(R.string.cancelar, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which)
             {
@@ -404,6 +423,27 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
         {
             Log.e("MIO", "Error al subir imagen", e);
         }
+    }
+
+    // ----------------------------------------------------- ALARMA DE ECLOSION ------------------------------------
+
+    public void actualizarAlarma(Date fecha)
+    {
+        AlarmManager gestor = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        // Intent que será lanzado por la alarma
+        Intent intent = new Intent(this, ReceptorAlarma.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        // Cancelar la alarma anterior si existe
+        gestor.cancel(pendingIntent);
+
+        Calendar calendario = Calendar.getInstance();
+        calendario.setTime(fecha);
+
+        gestor.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,
+                calendario.getTimeInMillis(),
+                pendingIntent);
     }
 
 
@@ -442,6 +482,12 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
 
     private void cambiarIdioma(String nuevoIdioma, boolean reiniciar)
     {
+        if(fragmentoActual.equals("mapa"))
+        {
+            volverAtras();
+        }
+
+
         idioma = nuevoIdioma;
 
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
@@ -655,6 +701,8 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
     {
         fragmentoActual = "nuevaPregunta";
         cambiarTitulo("");
+
+        vaciarBackStack();
 
         Bundle bundle = new Bundle();
 
@@ -876,6 +924,15 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
         respuestaAMedias = "";
         fragmentoActual = "mapa";
     }
+
+    @Override
+    public void salirDelMapa()
+    {
+        volverAtras();
+    }
+
+
+
 
 
 

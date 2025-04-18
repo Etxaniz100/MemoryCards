@@ -3,7 +3,9 @@ package com.example.memorycards;
 import static androidx.core.location.LocationManagerCompat.getCurrentLocation;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -20,6 +22,7 @@ import androidx.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -86,6 +89,7 @@ public class Mapa extends Fragment {
 
 
         mapa = view.findViewById(R.id.mapa);
+
         mapa.setTileSource(TileSourceFactory.MAPNIK);
         mapa.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.ALWAYS);
         mapa.setMultiTouchControls(true);
@@ -127,6 +131,7 @@ public class Mapa extends Fragment {
         if (    ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
+            listener.salirDelMapa();
             return;
         }
 
@@ -162,7 +167,11 @@ public class Mapa extends Fragment {
                             }
                             else
                             {
-                                Toast.makeText(getContext(), "Ubicación desconocida", Toast.LENGTH_SHORT).show();
+                                mostrarMensaje( getContext().getResources().getString(R.string.titulo_aviso_sin_ubicacion),
+                                                getContext().getResources().getString(R.string.aviso_sin_ubicacion),
+                                                () -> {
+                                                        listener.salirDelMapa();
+                                                });
                             }
 
                             if(!inicializado && miPosicion != null)
@@ -176,6 +185,39 @@ public class Mapa extends Fragment {
                         });
     }
 
+    private void mostrarMensaje(String titulo, String mensaje, Runnable funcionOk)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(titulo);
+
+        TextView aux = new TextView(getContext());
+
+        TextView textView = new TextView(getContext());
+        String textoMensaje = "  " + mensaje;
+        textView.setText(textoMensaje);
+
+        LinearLayout layoutName = new LinearLayout(getContext());
+        layoutName.setOrientation(LinearLayout.VERTICAL);
+
+        layoutName.addView(aux);
+        layoutName.addView(textView);
+
+        builder.setView(layoutName);
+
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
+                if(funcionOk != null)
+                {
+                    funcionOk.run();
+                }
+            }
+        });
+
+        builder.show();
+    }
     private void colocarComidas()
     {
         GestorMazos gestorMazos = GestorMazos.getMiGestorMazos();
@@ -282,8 +324,8 @@ public class Mapa extends Fragment {
                                 marcadorPosicionUsuario.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
                                 mapa.getOverlays().add(marcadorPosicionUsuario);
 
-
-                                if(posicionComida.distanceToAsDouble(miPosicion) < distanciaCercania)
+                                double distanciaHastaComida = posicionComida.distanceToAsDouble(miPosicion);
+                                if(distanciaHastaComida < distanciaCercania)
                                 {
                                     GestorMazos.setCantidadComida(GestorMazos.getCantidadComida()+1, getContext(), getActivity());
                                     mapa.getOverlays().remove(marker);
@@ -292,8 +334,7 @@ public class Mapa extends Fragment {
                                 }
                                 else
                                 {
-                                    //TODO : idioma
-                                    Toast.makeText(getContext(), "Muy lejos", Toast.LENGTH_SHORT).show();
+                                    mostrarMensaje(getContext().getResources().getString(R.string.titulo_aviso_mapa), getContext().getResources().getString(R.string.aviso_distancia)+" : "+ (int)distanciaHastaComida + "m", null);
                                 }
                             }
 
@@ -321,5 +362,6 @@ public class Mapa extends Fragment {
     public interface ListenerFragmentMapa
     {
         void mapaIniciado();
+        void salirDelMapa();
     }
 }

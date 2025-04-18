@@ -27,6 +27,8 @@ import android.widget.TextView;
 public class RegistroUsuario extends Fragment {
 
     private ListenerRegistroUsuario listener;
+    private EditText textoUsuario;
+
     public RegistroUsuario() {
         // Required empty public constructor
     }
@@ -62,9 +64,28 @@ public class RegistroUsuario extends Fragment {
         Button boton = (Button) view.findViewById(R.id.boton_registrar_usuario);
         boton.setOnClickListener(v -> registrarUsuario(view));
 
+        textoUsuario = (EditText) view.findViewById(R.id.editRegistroNombre);
+
+        Bundle bundle = requireArguments();
+        if(bundle != null)
+        {
+            String usuario = bundle.getString("usuario");
+            textoUsuario.setText(usuario);
+        }
+
         listener.registroUsuarioInicado();
     }
 
+    // --------------------------------- Recuperación de información
+
+    public void onSaveInstanceState(Bundle bundle)
+    {
+        super.onSaveInstanceState(bundle);
+        if(textoUsuario != null)
+        {
+            listener.guardarRegistro(textoUsuario.getText().toString());
+        }
+    }
     private void registrarUsuario(View v)
     {
         EditText editTextUsuario = (EditText) v.findViewById(R.id.editRegistroNombre);
@@ -84,22 +105,22 @@ public class RegistroUsuario extends Fragment {
 
         if(usuario.equals(""))
         {
-            tituloUsuario.setText("Este campo es obligatorio");
+            tituloUsuario.setText(getContext().getResources().getString(R.string.campo_obligatorio));
             return;
         }
         if(clave.equals(""))
         {
-            tituloClave.setText("Este campo es obligatorio");
+            tituloClave.setText(getContext().getResources().getString(R.string.campo_obligatorio));
             return;
         }
         if(claveRe.equals(""))
         {
-            tituloClaveRe.setText("Este campo es obligatorio");
+            tituloClaveRe.setText(getContext().getResources().getString(R.string.campo_obligatorio));
             return;
         }
         if(!clave.equals(claveRe))
         {
-            tituloClaveRe.setText("Las contraseñas no coinciden");
+            tituloClaveRe.setText(getContext().getResources().getString(R.string.contrasena_no_coincide));
             return;
         }
 
@@ -120,13 +141,17 @@ public class RegistroUsuario extends Fragment {
                             if(workInfo.getOutputData() == null)
                             {
 
-                                tituloUsuario.setText("Error insperado");
+                                tituloUsuario.setText(getContext().getResources().getString(R.string.error_inesperado));
                                 return;
                             }
                             String tipoResultado = workInfo.getOutputData().getString("tipo");
 
                             if(tipoResultado != null && tipoResultado.equals("success"))
                             {
+                                if(textoUsuario != null)
+                                {
+                                    listener.guardarRegistro(textoUsuario.getText().toString());
+                                }
                                 listener.usuarioRegistrado();
                                 return;
                             }
@@ -136,7 +161,7 @@ public class RegistroUsuario extends Fragment {
                                 String mensajeResultado = workInfo.getOutputData().getString("mensaje");
                                 if(mensajeResultado != null && mensajeResultado.equals("existe"))
                                 {
-                                    tituloUsuario.setText("Usuario existente");
+                                    tituloUsuario.setText(getContext().getResources().getString(R.string.usuario_existe));
                                 }
                             }
                         }
@@ -163,5 +188,6 @@ public class RegistroUsuario extends Fragment {
     {
         void registroUsuarioInicado();
         void usuarioRegistrado();
+        void guardarRegistro(String usuario);
     }
 }

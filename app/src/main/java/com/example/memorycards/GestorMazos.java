@@ -196,6 +196,15 @@ public class GestorMazos
     public void subirHuevo(Context context, GestorHuevo h, LifecycleOwner owner)
     {
         huevo = h;
+        if(h == null)
+        {
+            return;
+        }
+
+        // Poner alarma
+        Date fechaAlarma = huevo.calcularFechaTriste();
+        huevo.actualizarAlarma(fechaAlarma, context);
+
         Date hoy = Calendar.getInstance().getTime();
         Data datosEntrada = new Data.Builder()
                 .putString("usuario", usuario)

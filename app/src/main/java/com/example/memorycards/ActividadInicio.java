@@ -1,7 +1,16 @@
 package com.example.memorycards;
 
+import android.app.AlertDialog;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.UserDictionary;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,20 +28,49 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import java.util.Locale;
+
 public class ActividadInicio extends AppCompatActivity implements RegistroUsuario.ListenerRegistroUsuario, InicioSesion.ListenerInicioSesion, GestorMazos.ListenerBaseDatos
 {
 
     private String fragmentoActual = "";
     private String usuario = "";
+    private String contrasena = "";
+    private String contrasenaRepetida = "";
 
     // Datos de DB cargados
     private boolean preguntasCargadas = false;
     private boolean huevoCargado = false;
     private boolean imagenCargada = false;
+    private String idioma = "";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
+
+
+        // ---------------------- Abrir bundle -------------------------------
+
+        if(savedInstanceState != null)
+        {
+            fragmentoActual = savedInstanceState.getString("fragmentoActual");
+            idioma = savedInstanceState.getString("idioma");
+
+            usuario = savedInstanceState.getString("usuario");
+            contrasena = savedInstanceState.getString("contrasena");
+            contrasenaRepetida = savedInstanceState.getString("contrasenaRepetida");
+        }
+        else
+        {
+            fragmentoActual = "";
+            SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+            idioma = sharedPref.getString("idioma", "es");
+        }
+
+        cambiarIdioma(idioma, false);
+
+        // ----------------------- Lo que ya estaba ---------------------------------
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_actividad_inicio);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.inicio), (v, insets) -> {
@@ -72,6 +110,67 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
         }
     }
 
+
+    public void abrirOpcionesIdioma()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getResources().getString(R.string.seleccion_idioma));
+        final CharSequence[] opciones = {getResources().getString(R.string.castellano), getResources().getString(R.string.ingles)};
+        builder.setSingleChoiceItems(opciones, -1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                switch (i)
+                {
+
+                    case 1: // Ingles
+                        //Toast.makeText(getBaseContext(), "Ingles", Toast.LENGTH_SHORT).show();
+                        cambiarIdioma("en", true);
+                        break;
+
+                    case 0:  // Castellano
+                    default: // Castellano
+                        //Toast.makeText(getBaseContext(), "Castellano", Toast.LENGTH_SHORT).show();
+                        cambiarIdioma("es", true);
+                        break;
+                }
+
+                dialogInterface.dismiss();
+            }
+        });
+
+        builder.show();
+    }
+
+
+    private void cambiarIdioma(String nuevoIdioma, boolean reiniciar)
+    {
+        if(fragmentoActual.equals("mapa"))
+        {
+            volverAtras();
+        }
+
+        idioma = nuevoIdioma;
+
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("idioma", idioma);
+        editor.apply();
+
+        Locale nuevaloc = new Locale(nuevoIdioma);
+        Locale.setDefault(nuevaloc);
+        Configuration config = new Configuration();
+        config.setLocale(nuevaloc);
+        config.setLayoutDirection(nuevaloc);
+
+        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+
+        if(reiniciar)
+        {
+            this.recreate();
+        }
+    }
+
     public boolean volverAtras()
     {
         return getSupportFragmentManager().popBackStackImmediate();
@@ -92,7 +191,9 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
 
         Bundle bundle = new Bundle();
 
-        //bundle.putString("sdfsdf", dfsdfsdf);
+        bundle.putString("usuario", usuario);
+        bundle.putString("contrasena", contrasena);
+
 
         vaciarBackStack();
         getSupportFragmentManager().beginTransaction()
@@ -109,7 +210,10 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
 
         Bundle bundle = new Bundle();
 
-        //bundle.putString("sdfsdf", dfsdfsdf);
+        bundle.putString("usuario", usuario);
+        bundle.putString("contrasena", contrasena);
+        bundle.putString("contrasenaRepetida", contrasenaRepetida);
+
 
         getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
@@ -118,35 +222,16 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
                 .commit();
     }
 
+
     // -------------------------------------- Recuperacion de fragmentos -------------------------------------------
 
-
-    public void onSaveInstanceState(Bundle bundle){
+    public void onSaveInstanceState(Bundle bundle)
+    {
         super.onSaveInstanceState(bundle);
-        //TODO
-        /*
+
+        bundle.putString("usuario", usuario);
         bundle.putString("fragmentoActual", fragmentoActual);
-
-        if(mazoActual == null)
-        {
-            bundle.putString("mazoActual", "");
-        }
-        else
-        {
-            bundle.putString("mazoActual", mazoActual.getNombre());
-        }
-
-        if(fragmentoActual.equals("estudiar") && cartaActual != null)
-        {
-            bundle.putString("cartaActual", cartaActual.pregunta);
-            bundle.putBoolean("respuestaMostrada", respuestaMostrada);
-        } else if (fragmentoActual.equals("nuevaPregunta"))
-        {
-            bundle.putString("preguntaAMedias", preguntaAMedias);
-            bundle.putString("respuestaAMedias", respuestaAMedias);
-        }
-
-        bundle.putString("idioma", idioma);*/
+        bundle.putString("idioma", idioma);
     }
 
     // -------------------------------------- Carga de base de datos -----------------------------------------
@@ -189,6 +274,19 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
         abrirFragmantoRegistro();
     }
 
+    @Override
+    public void abrirIdiomas()
+    {
+        abrirOpcionesIdioma();
+    }
+
+    @Override
+    public void guardarInicioSesion(String u)
+    {
+        usuario = u;
+    }
+
+
 
 
     // -------------------------------------- Fragment REGISTRO USUARIO --------------------------------------------
@@ -203,8 +301,18 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
     public void usuarioRegistrado()
     {
         abrirFragmantoInicioSesion();
-        Toast.makeText(this, "Usuario registrado", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Usuario registrado", Toast.LENGTH_SHORT).show();
     }
+
+    @Override
+    public void guardarRegistro(String u)
+    {
+        usuario = u;
+    }
+
+
+
+
 
     // ----------------------------------- Listener BD ---------------------
 
@@ -225,6 +333,16 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
     public void huevoCargado()
     {
         huevoCargado = true;
+
+        try
+        {
+            SharedPreferences sharedPref = getSharedPreferences("preferencias", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("nombre_huevo", GestorMazos.getMiGestorMazos().getHuevo().getNombre());
+            editor.apply();
+        }
+        catch (Exception e){}
+
         intentarIniciarAplicacion();
     }
 
@@ -240,7 +358,40 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
     {
         if(preguntasCargadas && huevoCargado && imagenCargada)
         {
+            anadirUsuarioADiccionario();
+
             iniciarAplicacion();
+        }
+    }
+
+    private void anadirUsuarioADiccionario()
+    {
+        String[] columnas = { UserDictionary.Words.WORD };
+        String seleccion = UserDictionary.Words.WORD + " = ?";
+        String[] args = { usuario };
+
+        Cursor cursor = getContentResolver().query(
+                UserDictionary.Words.CONTENT_URI,
+                columnas,
+                seleccion,
+                args,
+                null
+        );
+
+        boolean existe = (cursor != null && cursor.getCount() > 0);
+
+        if (cursor != null)
+        {
+            cursor.close();
+        }
+
+        if(!existe)
+        {
+            ContentValues values = new ContentValues();
+            values.put(UserDictionary.Words.WORD, usuario);
+            values.put(UserDictionary.Words.FREQUENCY, 250);
+
+            Uri uri = getContentResolver().insert(UserDictionary.Words.CONTENT_URI, values);
         }
     }
 

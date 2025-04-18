@@ -1,15 +1,24 @@
 package com.example.memorycards;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.icu.util.TimeZone;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.CancellationSignal;
+import android.provider.CalendarContract;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +28,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Huevo#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.Date;
+
+
 public class Huevo extends Fragment {
 
     private ListenerFragmentHuevo listener;
@@ -150,7 +158,10 @@ public class Huevo extends Fragment {
         if(huevo != null && huevo.getProgreso() >= 100)
         {
             botonAbrir.setVisibility(View.VISIBLE);
-            botonAbrir.setOnClickListener(v -> abrirHuevo());
+            botonAbrir.setOnClickListener(v ->
+                                            {
+                                                abrirHuevo();
+                                            });
         }
         else if(huevo != null && huevo.getEstadoFelicidad().equals("caducado"))
         {
@@ -163,9 +174,20 @@ public class Huevo extends Fragment {
             botonAbrir.setVisibility(View.INVISIBLE);
         }
 
+        // ----------------------------- Poner alarma --------------------------------------------
+        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.SCHEDULE_EXACT_ALARM) == PackageManager.PERMISSION_GRANTED)
+        {
+            Date fechaAlarma = huevo.calcularFechaTriste();
+            huevo.actualizarAlarma(fechaAlarma, getContext());
+        }
+
+
+
         listener.huevoIniciado();
 
     }
+
+
 
     // ------------------------ COmida ----------
 
@@ -438,6 +460,9 @@ public class Huevo extends Fragment {
 
     private void abrirHuevo()
     {
+        Toast.makeText(getContext(), "Auuuga!", Toast.LENGTH_SHORT).show();
+        //anadirEventoHuevoAbierto();
+
         String nombreH = huevo.getNombre();
         //GestorMazos.getMiGestorMazos().borrarHuevo(this.getContext(), huevo);
 
@@ -457,10 +482,10 @@ public class Huevo extends Fragment {
             public void onClick(DialogInterface dialog, int which)
             {
                 dialog.dismiss();
+
                 listener.huevoAbierto();
             }
         });
-
 
         builder.show();
         listener.huevoAbierto();

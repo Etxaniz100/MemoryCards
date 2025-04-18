@@ -53,4 +53,17 @@
     <string name="usuario">User</string>
     <string name="contrasena">Password</string>
     <string name="contrasena_re">Repeat password</string>
+    <string name="titulo_aviso_mapa">Food too far away</string>
+    <string name="aviso_distancia">"Food is at "</string>
+    <string name="titulo_aviso_sin_ubicacion">Location disabled</string>
+    <string name="aviso_sin_ubicacion">Turn on location to use this function</string>
+    <string name="titulo_seleccionar_foto">Select image</string>
+    <string name="galeria">Gallery</string>
+    <string name="camara">Camera</string>
+    <string name="campo_obligatorio">This field is required</string>
+    <string name="contrasena_no_coincide">Password does not match</string>
+    <string name="error_inesperado">Unespected error</string>
+    <string name="usuario_existe">User already exists</string>
+    <string name="usuario_no_encontrado">User not found</string>
+    <string name="contrasena_incorrecta">Incorrect password</string>
 </resources>

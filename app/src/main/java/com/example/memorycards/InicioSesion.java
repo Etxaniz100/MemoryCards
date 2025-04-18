@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -27,6 +28,8 @@ import android.widget.TextView;
 public class InicioSesion extends Fragment {
 
     private ListenerInicioSesion listener;
+    private EditText textoUsuario;
+
     public InicioSesion() {
         // Required empty public constructor
     }
@@ -64,12 +67,44 @@ public class InicioSesion extends Fragment {
         boton.setOnClickListener(v -> iniciarSesion(view));
 
         boton = (Button) view.findViewById(R.id.boton_ir_registro);
-        boton.setOnClickListener(v -> listener.abrirRegistro());
+        boton.setOnClickListener(v ->
+        {
+            if(textoUsuario != null)
+            {
+                listener.guardarInicioSesion(textoUsuario.getText().toString());
+            }
+            listener.abrirRegistro();
+        });
+
+        ImageView imagenIdioma = (ImageView) view.findViewById(R.id.imagen_seleccion_idioma);
+        imagenIdioma.setOnClickListener(v -> listener.abrirIdiomas());
+
+        textoUsuario = (EditText) view.findViewById(R.id.editInicioSesionNombre);
+
+        Bundle bundle = requireArguments();
+        if(bundle != null)
+        {
+            String usuario = bundle.getString("usuario");
+            textoUsuario.setText(usuario);
+        }
 
 
+        String posiblePregunta = bundle.getString("preguntaAMedias");
+        String posibleRespuesta = bundle.getString("respuestaAMedias");
 
 
         listener.inicioSesionIniciado();
+    }
+
+    // --------------------------------- Recuperación de información
+
+    public void onSaveInstanceState(Bundle bundle)
+    {
+        super.onSaveInstanceState(bundle);
+        if(textoUsuario != null)
+        {
+            listener.guardarInicioSesion(textoUsuario.getText().toString());
+        }
     }
 
     private void iniciarSesion(View v)
@@ -86,12 +121,12 @@ public class InicioSesion extends Fragment {
         tituloClave.setText("");
         if(usuario.equals(""))
         {
-            tituloUsuario.setText("Este campo es obligatorio");
+            tituloUsuario.setText(getContext().getResources().getString(R.string.campo_obligatorio));
             return;
         }
         if(clave.equals(""))
         {
-            tituloClave.setText("Este campo es obligatorio");
+            tituloClave.setText(getContext().getResources().getString(R.string.campo_obligatorio));
             return;
         }
 
@@ -113,7 +148,7 @@ public class InicioSesion extends Fragment {
                             {
 
                                 TextView textViewResult = v.findViewById(R.id.tituloeditInicioSesionNombre);
-                                textViewResult.setText("Error insperado");
+                                textViewResult.setText(getContext().getResources().getString(R.string.error_inesperado));
                                 return;
                             }
                             String tipoResultado = workInfo.getOutputData().getString("tipo");
@@ -129,10 +164,10 @@ public class InicioSesion extends Fragment {
                                 String mensajeResultado = workInfo.getOutputData().getString("mensaje");
                                 if(mensajeResultado != null && mensajeResultado.equals("nadie"))
                                 {
-                                    tituloUsuario.setText("Usuario no encontrado");
+                                    tituloUsuario.setText(getContext().getResources().getString(R.string.usuario_no_encontrado));
                                 } else if(mensajeResultado != null && mensajeResultado.equals("incorrecto"))
                                 {
-                                    tituloClave.setText("Contraseña incorrecta");
+                                    tituloClave.setText(getContext().getResources().getString(R.string.contrasena_incorrecta));
                                 }
                             }
 
@@ -161,6 +196,8 @@ public class InicioSesion extends Fragment {
         void inicioSesionIniciado();
         void sesionIniciada(String usuario);
         void abrirRegistro();
+        void abrirIdiomas();
+        void guardarInicioSesion(String usuario);
     }
 
 }
