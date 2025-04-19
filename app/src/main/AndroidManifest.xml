@@ -28,6 +28,8 @@
     <!-- Para alarma -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
+
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -67,6 +69,20 @@
 
         <!-- Para la alarma -->
         <receiver android:name=".ReceptorAlarma" />
+
+        <!-- Para el widget -->
+        <receiver
+            android:name=".WidgetEstado"
+            android:label="Widget Estado"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.example.ACTION_ACTUALIZAR_WIDGET" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
     </application>
 
 </manifest>

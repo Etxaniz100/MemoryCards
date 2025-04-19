@@ -360,8 +360,8 @@ public class GestorHuevo
 
         float horasHastaTriste = felicidadActual - felicidadTriste;
 
-        //ret.setTime(ret.getTime() + (long) (horasHastaTriste * 3600000));
-        ret.setTime(ret.getTime() + (long) (1000*30));
+        ret.setTime(ret.getTime() + (long) (horasHastaTriste * 3600000));
+        //ret.setTime(ret.getTime() + (long) (1000*30));
 
         Log.d("MIO", "Horas hasta triste: " + horasHastaTriste + " | fecha notificacion :" + ret.toString());
         return ret;

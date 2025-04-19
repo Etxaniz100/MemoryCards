@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
             Log.d("MIO", "No se ha encontrado la imagen view");
         }
 
-        // +----------------------------------- Notificaciones ----------------------------------------+
+        // +----------------------------------- Permisos ----------------------------------------+
         // |                                                                                           |
 
 
@@ -291,31 +291,31 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 30);
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 31);
         }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 30);
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, 32);
         }
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
         {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, 30);
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, 33);
         }
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED)
         {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_CALENDAR}, 30);
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_CALENDAR}, 34);
         }
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED)
         {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CALENDAR}, 30);
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CALENDAR}, 35);
         }
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SCHEDULE_EXACT_ALARM) != PackageManager.PERMISSION_GRANTED)
         {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.SCHEDULE_EXACT_ALARM}, 30);
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.SCHEDULE_EXACT_ALARM}, 36);
         }
 
 

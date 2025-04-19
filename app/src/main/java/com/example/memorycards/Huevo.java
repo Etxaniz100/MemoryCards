@@ -460,7 +460,6 @@ public class Huevo extends Fragment {
 
     private void abrirHuevo()
     {
-        Toast.makeText(getContext(), "Auuuga!", Toast.LENGTH_SHORT).show();
         //anadirEventoHuevoAbierto();
 
         String nombreH = huevo.getNombre();

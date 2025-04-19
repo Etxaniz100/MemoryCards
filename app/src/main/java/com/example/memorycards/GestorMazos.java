@@ -2,6 +2,7 @@ package com.example.memorycards;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
@@ -203,9 +204,25 @@ public class GestorMazos
 
         // Poner alarma
         Date fechaAlarma = huevo.calcularFechaTriste();
+        Date hoy = Calendar.getInstance().getTime();
+
         huevo.actualizarAlarma(fechaAlarma, context);
 
-        Date hoy = Calendar.getInstance().getTime();
+        try
+        {
+            SharedPreferences sharedPref = context.getSharedPreferences("preferencias", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("nombre_huevo", huevo.getNombre());
+            editor.putFloat("felicidad_huevo", huevo.getFelicidad());
+            editor.putFloat("progreso_huevo", huevo.getProgreso());
+
+            editor.putString("ultima_vez_abierto", formatoFecha.format(hoy));
+
+            editor.apply();
+        }
+        catch (Exception e){}
+
+
         Data datosEntrada = new Data.Builder()
                 .putString("usuario", usuario)
                 .putString("nombre", huevo.getNombre())

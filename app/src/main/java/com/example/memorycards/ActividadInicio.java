@@ -336,9 +336,11 @@ public class ActividadInicio extends AppCompatActivity implements RegistroUsuari
 
         try
         {
+            GestorHuevo huevo = GestorMazos.getMiGestorMazos().getHuevo();
             SharedPreferences sharedPref = getSharedPreferences("preferencias", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString("nombre_huevo", GestorMazos.getMiGestorMazos().getHuevo().getNombre());
+            editor.putString("nombre_huevo", huevo.getNombre());
+            editor.putFloat("felicidad_huevo", huevo.getFelicidad());
             editor.apply();
         }
         catch (Exception e){}
