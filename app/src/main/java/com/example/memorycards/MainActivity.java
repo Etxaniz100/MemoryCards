@@ -425,27 +425,6 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
         }
     }
 
-    // ----------------------------------------------------- ALARMA DE ECLOSION ------------------------------------
-
-    public void actualizarAlarma(Date fecha)
-    {
-        AlarmManager gestor = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-        // Intent que será lanzado por la alarma
-        Intent intent = new Intent(this, ReceptorAlarma.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-        // Cancelar la alarma anterior si existe
-        gestor.cancel(pendingIntent);
-
-        Calendar calendario = Calendar.getInstance();
-        calendario.setTime(fecha);
-
-        gestor.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,
-                calendario.getTimeInMillis(),
-                pendingIntent);
-    }
-
 
     // ---------------------------------------------------------- IDIOMA ------------------------------------------------------------
 
