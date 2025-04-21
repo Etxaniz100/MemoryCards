@@ -303,16 +303,6 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, 33);
         }
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED)
-        {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_CALENDAR}, 34);
-        }
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED)
-        {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_CALENDAR}, 35);
-        }
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SCHEDULE_EXACT_ALARM) != PackageManager.PERMISSION_GRANTED)
         {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.SCHEDULE_EXACT_ALARM}, 36);
@@ -365,6 +355,11 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
 
     private void escogerFoto()
     {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, 33);
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle(R.string.titulo_seleccionar_foto); //TODO: Idiomas
 
@@ -378,6 +373,11 @@ public class MainActivity extends AppCompatActivity implements  MostrarListaMazo
             public void onClick(DialogInterface dialog, int which)
             {
                 dialog.dismiss();
+
+                if (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+                {
+                    return;
+                }
 
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
                 archivoImagen = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "IMG_" + timeStamp + ".jpg");

@@ -31,7 +31,7 @@ public class GestorHuevo
     private String colorHuevo; // rojo, verde, gris
     private String[] colores = {"rojo", "verde", "gris"};
     private int ratio;
-    private float potenciaComida = 50;
+    private float potenciaComida = 5;
 
     public GestorHuevo()
     {
