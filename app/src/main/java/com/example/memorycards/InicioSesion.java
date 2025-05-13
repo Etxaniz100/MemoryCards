@@ -63,6 +63,8 @@ public class InicioSesion extends Fragment {
     {
         super.onViewCreated(view, savedInstanceState);
 
+        WorkManager.getInstance(getContext());
+
         Button boton = (Button) view.findViewById(R.id.boton_iniciar_sesion);
         boton.setOnClickListener(v -> iniciarSesion(view));
 
